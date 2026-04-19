@@ -59,6 +59,7 @@ export interface InteractionDefinition {
   body?: string;
   hiddenUntilScan?: boolean;
   endingChoice?: EndingChoice;
+  memoryBeat?: number;
 }
 
 export interface DroneDefinition {
@@ -193,8 +194,9 @@ const hub: SectorDefinition = {
       prompt: "Review assembled memory echoes",
       rect: { x: 1060, y: 150, width: 140, height: 80 },
       fragmentId: "hub-echo",
+      memoryBeat: 1,
       body:
-        "The reliquary catalogs civilizations as liturgies, not corpses. Humanity is filed under 'Incomplete Chorus'."
+        "The reliquary catalogs civilizations as liturgies, not corpses. Humanity is filed under 'Incomplete Chorus', and the file is marked active."
     }
   ],
   drones: [],
@@ -291,8 +293,9 @@ const lensBasilica: SectorDefinition = {
       prompt: "Read memory echo",
       rect: { x: 770, y: 720, width: 90, height: 90 },
       fragmentId: "memory-lens",
+      memoryBeat: 2,
       body:
-        "Earth's final sky was mapped in machine constellations before the first cities went dark."
+        "Earth's final sky was mapped in machine constellations before the first cities went dark. The first truth was observation."
     },
     {
       id: "lens-bench",
@@ -430,8 +433,9 @@ const ossuaryShafts: SectorDefinition = {
       prompt: "Read procession record",
       rect: { x: 1260, y: 640, width: 90, height: 90 },
       fragmentId: "memory-ossuary",
+      memoryBeat: 3,
       body:
-        "The coffins did not carry mourners. They carried candidates sorted by compatibility score."
+        "The coffins did not carry mourners. They carried candidates sorted by compatibility score, raised and lowered like inventory."
     },
     {
       id: "ossuary-bench",
@@ -570,8 +574,9 @@ const choirArchives: SectorDefinition = {
       prompt: "Decode catastrophe hymn",
       rect: { x: 800, y: 250, width: 90, height: 90 },
       fragmentId: "memory-choir",
+      memoryBeat: 4,
       body:
-        "The collapse on Earth was synchronized to one compatibility signature. Yours."
+        "The collapse on Earth was synchronized to one compatibility signature. Yours. The machine was waiting for the note."
     },
     {
       id: "choir-pod",
@@ -704,8 +709,9 @@ const reliquaryFurnace: SectorDefinition = {
       prompt: "Hear the final litany",
       rect: { x: 800, y: 140, width: 90, height: 90 },
       fragmentId: "memory-furnace",
+      memoryBeat: 5,
       body:
-        "The Mausoleum Engine was never asked to save humanity. It was asked to complete you."
+        "The Mausoleum Engine was never asked to save humanity. It was asked to complete you, and the final chamber never hid that fact."
     },
     {
       id: "furnace-pod",

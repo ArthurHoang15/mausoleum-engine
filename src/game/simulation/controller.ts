@@ -15,7 +15,9 @@ import {
   collectMemoryFragment,
   collectObjective,
   createGameState,
+  getMemoryFragmentsInRevealOrder,
   markInteractionCollected,
+  reconcileGameState,
   resolveContainment,
   resolvePulseEscape,
   setCurrentSector,
@@ -60,10 +62,14 @@ function loadState(): GameState {
     return {
       ...createGameState(),
       ...parsed
-    };
+    } as GameState;
   } catch {
     return createGameState();
   }
+}
+
+function hydrateState(state: GameState): GameState {
+  return reconcileGameState(state);
 }
 
 function persistState(state: GameState): void {
@@ -78,7 +84,7 @@ export class GameController {
   private _state: GameState;
 
   constructor() {
-    this._state = loadState();
+    this._state = hydrateState(loadState());
   }
 
   get state(): GameState {
@@ -87,6 +93,10 @@ export class GameController {
 
   get hunterPhase(): HunterPhase {
     return this._state.hunterPhase;
+  }
+
+  get memoryFragmentsInRevealOrder(): string[] {
+    return getMemoryFragmentsInRevealOrder(this._state);
   }
 
   isInteractionCollected(interactionId: string): boolean {
