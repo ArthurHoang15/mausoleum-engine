@@ -10,7 +10,11 @@ import type {
   RenderedProtocol,
   RenderedWall
 } from "./types";
-import { getVisibleWallRect, isInteractionVisible } from "./world-logic";
+import {
+  getPulseTweenProfile,
+  getVisibleWallRect,
+  isInteractionVisible
+} from "./world-logic";
 
 export class WorldRenderer {
   private readonly background: Phaser.GameObjects.Rectangle;
@@ -108,13 +112,21 @@ export class WorldRenderer {
         wall.def.pulseRect,
         active
       );
+      const profile = getPulseTweenProfile(
+        {
+          id: wall.def.id,
+          ...wall.def.rect
+        },
+        target
+      );
       this.scene.tweens.add({
         targets: wall.object,
         x: target.x + target.width / 2,
         y: target.y + target.height / 2,
         width: target.width,
         height: target.height,
-        duration: 550,
+        duration: profile.duration,
+        delay: profile.delay,
         ease: "Sine.easeInOut"
       });
     }

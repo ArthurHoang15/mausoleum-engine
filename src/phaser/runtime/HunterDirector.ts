@@ -15,13 +15,16 @@ import type { PlayerDirector } from "./PlayerDirector";
 import type { WorldRenderer } from "./WorldRenderer";
 import {
   advanceDronePatrolState,
-  hasVisionOnTarget
+  getDroneDetectionStrength
 } from "./hunter-logic";
+import { resolveWardenBehavior } from "./warden-logic";
 
 export class HunterDirector {
   private warden: Warden | null = null;
   private previousPhase: HunterPhase = "dormant";
   private containmentTimer = 0;
+  private phaseElapsed = 0;
+  private lastKnownPlayerPosition: VectorLike | null = null;
 
   constructor(
     private readonly scene: Phaser.Scene,
@@ -32,6 +35,7 @@ export class HunterDirector {
 
   syncPhase(phase: HunterPhase): void {
     this.previousPhase = phase;
+    this.phaseElapsed = 0;
   }
 
   onSectorLoaded(): void {
@@ -39,6 +43,7 @@ export class HunterDirector {
       this.warden.body.setVisible(false);
       this.warden.halo.setVisible(false);
     }
+    this.phaseElapsed = 0;
   }
 
   isContainmentActive(): boolean {
@@ -128,18 +133,16 @@ export class HunterDirector {
     let signal = 0;
 
     for (const drone of drones) {
-      if (
-        hasVisionOnTarget({
-          drone: { x: drone.body.x, y: drone.body.y },
-          target: playerPosition,
-          range: drone.def.range,
-          facingAngle: drone.facingAngle,
-          fov: drone.def.fov,
-          hidden: playerHidden
-        })
-      ) {
-        signal += 18 * delta;
-      }
+      const strength = getDroneDetectionStrength({
+        drone: { x: drone.body.x, y: drone.body.y },
+        target: playerPosition,
+        range: drone.def.range,
+        facingAngle: drone.facingAngle,
+        fov: drone.def.fov,
+        hidden: playerHidden
+      });
+      signal += strength * 22 * delta;
+      drone.halo.setAlpha(0.08 + strength * 0.12);
     }
 
     for (const zone of protocolZones) {
@@ -176,6 +179,7 @@ export class HunterDirector {
     }
 
     this.previousPhase = phase;
+    this.phaseElapsed = 0;
   }
 
   updateWarden(
@@ -184,8 +188,22 @@ export class HunterDirector {
     playerDirector: PlayerDirector
   ): void {
     const phase = this.controller.hunterPhase;
+    this.phaseElapsed += delta;
 
-    if (phase !== "pulse-hunt") {
+    if (!playerDirector.isHidden) {
+      this.lastKnownPlayerPosition = { ...playerDirector.position };
+    }
+
+    const behavior = resolveWardenBehavior({
+      phase,
+      elapsedInPhase: this.phaseElapsed,
+      sectorSize: currentSector.size,
+      playerPosition: playerDirector.position,
+      playerHidden: playerDirector.isHidden,
+      lastKnownPlayerPosition: this.lastKnownPlayerPosition
+    });
+
+    if (!behavior.visible) {
       playerDirector.resetConcealment();
       if (this.warden) {
         this.warden.body.setVisible(false);
@@ -204,21 +222,30 @@ export class HunterDirector {
 
     this.warden.body.setVisible(true);
     this.warden.halo.setVisible(true);
+    this.warden.body.setAlpha(behavior.bodyAlpha);
+    this.warden.halo.setAlpha(behavior.haloAlpha);
 
-    const speed = playerDirector.isHidden ? 80 : 165;
-    const toPlayer = new Phaser.Math.Vector2(
-      playerDirector.position.x - this.warden.body.x,
-      playerDirector.position.y - this.warden.body.y
+    const toTarget = new Phaser.Math.Vector2(
+      behavior.target.x - this.warden.body.x,
+      behavior.target.y - this.warden.body.y
     );
-    if (toPlayer.lengthSq() > 4) {
-      toPlayer.normalize().scale(speed * delta);
-      this.warden.body.x += toPlayer.x;
-      this.warden.body.y += toPlayer.y;
+    const distanceToTarget = toTarget.length();
+    if (distanceToTarget > behavior.desiredDistance) {
+      toTarget
+        .normalize()
+        .scale(
+          Math.min(
+            distanceToTarget - behavior.desiredDistance,
+            behavior.movementSpeed * delta
+          )
+        );
+      this.warden.body.x += toTarget.x;
+      this.warden.body.y += toTarget.y;
       this.warden.halo.x = this.warden.body.x;
       this.warden.halo.y = this.warden.body.y;
     }
 
-    if (playerDirector.isHidden) {
+    if (phase === "pulse-hunt" && playerDirector.isHidden) {
       playerDirector.addConcealment(delta);
       if (playerDirector.concealmentDuration > 2.5) {
         this.controller.resolvePulseEscape();
@@ -228,6 +255,7 @@ export class HunterDirector {
     }
 
     if (
+      phase === "pulse-hunt" &&
       !playerDirector.isHidden &&
       Phaser.Math.Distance.Between(
         this.warden.body.x,

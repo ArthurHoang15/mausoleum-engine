@@ -44,14 +44,30 @@ export function hasVisionOnTarget({
   const dx = target.x - drone.x;
   const dy = target.y - drone.y;
   const distance = Math.hypot(dx, dy);
-  if (distance >= range) {
+  if (distance > range) {
     return false;
   }
 
   const angleToTarget = Math.atan2(dy, dx);
   const angleDelta = Math.abs(wrapAngle(angleToTarget - facingAngle));
 
-  return angleDelta < fov;
+  return angleDelta <= fov;
+}
+
+export function getDroneDetectionStrength(input: VisionCheck): number {
+  if (!hasVisionOnTarget(input)) {
+    return 0;
+  }
+
+  const dx = input.target.x - input.drone.x;
+  const dy = input.target.y - input.drone.y;
+  const distance = Math.hypot(dx, dy);
+  const angleToTarget = Math.atan2(dy, dx);
+  const angleDelta = Math.abs(wrapAngle(angleToTarget - input.facingAngle));
+  const distanceWeight = Math.max(0, 1 - distance / input.range);
+  const centerWeight = Math.max(0, 1 - angleDelta / Math.max(input.fov, 0.0001));
+
+  return Math.max(0, Math.min(1, distanceWeight * 0.38 + centerWeight * 0.62));
 }
 
 export function advanceDronePatrolState(

@@ -2,6 +2,7 @@ import Phaser from "phaser";
 
 import type { RenderedWall, VectorLike } from "./types";
 export { combineMovementInput } from "./player-math";
+import { evaluateHiddenMovement } from "./stealth-logic";
 
 export class PlayerDirector {
   private readonly player: Phaser.GameObjects.Arc;
@@ -10,6 +11,7 @@ export class PlayerDirector {
   private dashTimer = 0;
   private dashVector = new Phaser.Math.Vector2();
   private concealmentTimer = 0;
+  private hideAnchor: VectorLike | null = null;
   private readonly playerSpeed = 140;
 
   constructor(private readonly scene: Phaser.Scene) {
@@ -36,6 +38,9 @@ export class PlayerDirector {
   setPosition(position: VectorLike): void {
     this.player.setPosition(position.x, position.y);
     this.halo.setPosition(position.x, position.y);
+    if (this.hidden) {
+      this.hideAnchor = { ...position };
+    }
   }
 
   resetStealth(): void {
@@ -43,12 +48,14 @@ export class PlayerDirector {
     this.resetConcealment();
     this.dashTimer = 0;
     this.dashVector.set(0, 0);
+    this.hideAnchor = null;
   }
 
   setHidden(hidden: boolean): void {
     this.hidden = hidden;
     this.player.setAlpha(hidden ? 0.3 : 1);
     this.halo.setAlpha(hidden ? 0.12 : 0.18);
+    this.hideAnchor = hidden ? this.position : null;
   }
 
   toggleHidden(): boolean {
@@ -90,17 +97,35 @@ export class PlayerDirector {
     overclockActive: boolean
   ): void {
     const move = new Phaser.Math.Vector2(inputVector.x, inputVector.y);
-    if (move.lengthSq() > 0 && this.hidden) {
-      this.setHidden(false);
-      this.resetConcealment();
-    }
 
     this.dashTimer = Math.max(0, this.dashTimer - delta);
+
+    let hiddenSpeedMultiplier = this.hidden ? 0.5 : 1;
+    if (this.hidden) {
+      const anchor = this.hideAnchor ?? this.position;
+      const hiddenMovement = evaluateHiddenMovement({
+        hidden: true,
+        inputMagnitude: move.length(),
+        distanceFromAnchor: Phaser.Math.Distance.Between(
+          this.player.x,
+          this.player.y,
+          anchor.x,
+          anchor.y
+        )
+      });
+
+      if (hiddenMovement.reveal) {
+        this.setHidden(false);
+        this.resetConcealment();
+      } else {
+        hiddenSpeedMultiplier = hiddenMovement.speedMultiplier;
+      }
+    }
 
     const speed =
       this.playerSpeed *
       (overclockActive ? 1.35 : 1) *
-      (this.hidden ? 0.5 : 1);
+      hiddenSpeedMultiplier;
     const dash =
       this.dashTimer > 0 ? this.dashVector.clone() : new Phaser.Math.Vector2();
     const velocity = move.scale(speed).add(dash);
@@ -112,6 +137,9 @@ export class PlayerDirector {
 
     this.player.setPosition(resolvedX, resolvedY);
     this.halo.setPosition(resolvedX, resolvedY);
+    if (this.hidden) {
+      this.hideAnchor ??= this.position;
+    }
   }
 
   private resolveAxis(
