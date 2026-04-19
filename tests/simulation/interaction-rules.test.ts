@@ -5,6 +5,9 @@ import {
   applySurgeryPod,
   collectMemoryFragment,
   createGameState,
+  getMemoryFragmentsInRevealOrder,
+  resolvePulseEscape,
+  triggerContainment,
   useEnergyCell,
   useMineralRelic
 } from "../../src/game/simulation/state";
@@ -43,5 +46,53 @@ describe("interaction rules", () => {
     const twice = collectMemoryFragment(once, "memory-1");
 
     expect(twice.memoryFragments).toEqual(["memory-1"]);
+  });
+
+  test("containment returns to the checkpoint with a small recovery tax", () => {
+    const state = {
+      ...createGameState(),
+      modules: {
+        ...createGameState().modules,
+        eyes: {
+          charge: 72,
+          condition: 58,
+          recentSignal: 12
+        }
+      }
+    };
+
+    const contained = triggerContainment(state);
+
+    expect(contained.currentSectorId).toBe("hub");
+    expect(contained.signalLevel).toBe(0);
+    expect(contained.hunterPhase).toBe("containment");
+    expect(contained.containmentCount).toBe(1);
+    expect(contained.modules.eyes.charge).toBeLessThan(72);
+    expect(contained.modules.eyes.charge).toBeGreaterThan(50);
+    expect(contained.modules.eyes.condition).toBeLessThan(58);
+    expect(contained.modules.eyes.condition).toBeGreaterThan(45);
+  });
+
+  test("pulse escape only softens an active pulse hunt", () => {
+    const escaped = resolvePulseEscape(createGameState());
+
+    expect(escaped.hunterPhase).toBe("dormant");
+    expect(escaped.signalLevel).toBe(0);
+  });
+
+  test("memory fragments follow the sector reveal order", () => {
+    let state = createGameState();
+
+    state = collectMemoryFragment(state, "memory-choir");
+    state = collectMemoryFragment(state, "hub-echo");
+    state = collectMemoryFragment(state, "memory-furnace");
+    state = collectMemoryFragment(state, "memory-lens");
+
+    expect(getMemoryFragmentsInRevealOrder(state)).toEqual([
+      "hub-echo",
+      "memory-lens",
+      "memory-choir",
+      "memory-furnace"
+    ]);
   });
 });

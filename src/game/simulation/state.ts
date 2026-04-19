@@ -63,6 +63,19 @@ const STALKING_THRESHOLD = 45;
 const PULSE_THRESHOLD = 70;
 const SIGNAL_DECAY_PER_SECOND = 3;
 const PULSE_DURATION_SECONDS = 7;
+const CONTAINMENT_CHARGE_TAX = 12;
+const CONTAINMENT_CONDITION_TAX = 8;
+const MEMORY_FRAGMENT_REVEAL_ORDER = [
+  "hub-echo",
+  "memory-lens",
+  "memory-ossuary",
+  "memory-choir",
+  "memory-furnace"
+];
+
+const memoryFragmentOrderIndex = new Map(
+  MEMORY_FRAGMENT_REVEAL_ORDER.map((fragmentId, index) => [fragmentId, index])
+);
 
 const sectorUnlockOrder: SectorId[] = [
   "lens-basilica",
@@ -92,6 +105,57 @@ function mapRack(
     legs: mapper(rack.legs, "legs"),
     neural: mapper(rack.neural, "neural"),
     core: mapper(rack.core, "core")
+  };
+}
+
+function sortMemoryFragments(fragments: string[]): string[] {
+  return [...fragments].sort((left, right) => {
+    const leftIndex = memoryFragmentOrderIndex.get(left) ?? Number.MAX_SAFE_INTEGER;
+    const rightIndex = memoryFragmentOrderIndex.get(right) ?? Number.MAX_SAFE_INTEGER;
+
+    if (leftIndex !== rightIndex) {
+      return leftIndex - rightIndex;
+    }
+
+    return left.localeCompare(right);
+  });
+}
+
+export function reconcileGameState(state: GameState): GameState {
+  const collectedObjectives = new Set(state.objectivesCollected);
+  const unlocked = new Set<SectorId>(state.unlockedSectorIds);
+
+  unlocked.add("hub");
+  unlocked.add("lens-basilica");
+
+  for (const sectorId of sectorUnlockOrder) {
+    if (!collectedObjectives.has(sectorId)) {
+      continue;
+    }
+
+    unlocked.add(sectorId);
+
+    const sectorIndex = sectorUnlockOrder.indexOf(sectorId);
+    const nextSectorId = sectorUnlockOrder[sectorIndex + 1];
+    if (nextSectorId) {
+      unlocked.add(nextSectorId);
+    }
+  }
+
+  return {
+    ...state,
+    unlockedSectorIds: [
+      "hub",
+      ...sectorUnlockOrder.filter((sectorId) => unlocked.has(sectorId))
+    ],
+    availableEndings: collectedObjectives.has("reliquary-furnace")
+      ? ([
+          "break-the-rite",
+          "become-the-caretaker",
+          "escape-incomplete"
+        ] as EndingChoice[])
+      : state.availableEndings,
+    memoryFragments: sortMemoryFragments(state.memoryFragments)
   };
 }
 
@@ -223,36 +287,25 @@ export function getAvailableEndings(state: GameState): EndingChoice[] {
   return [...state.availableEndings];
 }
 
+export function getMemoryFragmentsInRevealOrder(state: GameState): string[] {
+  return sortMemoryFragments(state.memoryFragments);
+}
+
 export function collectObjective(state: GameState, sectorId: SectorId): GameState {
   if (state.objectivesCollected.includes(sectorId)) {
-    return state;
+    return reconcileGameState({
+      ...state,
+      lastEvent: `Objective recovered in ${sectorId}.`
+    });
   }
 
   const objectivesCollected = [...state.objectivesCollected, sectorId];
-  const unlocked = [...state.unlockedSectorIds];
-  const sectorIndex = sectorUnlockOrder.indexOf(sectorId);
-  const nextSectorId = sectorUnlockOrder[sectorIndex + 1];
 
-  if (nextSectorId && !unlocked.includes(nextSectorId)) {
-    unlocked.push(nextSectorId);
-  }
-
-  const availableEndings =
-    sectorId === "reliquary-furnace"
-      ? ([
-          "break-the-rite",
-          "become-the-caretaker",
-          "escape-incomplete"
-        ] as EndingChoice[])
-      : state.availableEndings;
-
-  return {
+  return reconcileGameState({
     ...state,
     objectivesCollected,
-    unlockedSectorIds: unlocked,
-    availableEndings,
     lastEvent: `Objective recovered in ${sectorId}.`
-  };
+  });
 }
 
 export function useMineralRelic(
@@ -307,15 +360,15 @@ export function applyImprovisedBench(
 ): GameState {
   const updated = applyModuleAction(state.modules, {
     module,
-    chargeGain: 20,
-    conditionGain: 18,
-    signal: 12
+    chargeGain: 16,
+    conditionGain: 12,
+    signal: 10
   });
 
   return {
     ...state,
     modules: updated,
-    signalLevel: state.signalLevel + 6,
+    signalLevel: state.signalLevel + 5,
     lastEvent: `Improvised bench stabilized ${module}, but the chamber noticed.`
   };
 }
@@ -330,7 +383,7 @@ export function collectMemoryFragment(
 
   return {
     ...state,
-    memoryFragments: [...state.memoryFragments, fragmentId],
+    memoryFragments: sortMemoryFragments([...state.memoryFragments, fragmentId]),
     lastEvent: `Memory fragment recovered: ${fragmentId}.`
   };
 }
@@ -372,14 +425,22 @@ export function applyEnvironmentalSignal(
 }
 
 export function triggerContainment(state: GameState): GameState {
+  const taxedModules = mapRack(state.modules, (status) => ({
+    ...status,
+    charge: clamp(status.charge - CONTAINMENT_CHARGE_TAX),
+    condition: clamp(status.condition - CONTAINMENT_CONDITION_TAX),
+    recentSignal: 0
+  }));
+
   return {
     ...state,
+    modules: taxedModules,
     currentSectorId: state.checkpointSectorId,
     signalLevel: 0,
     hunterPhase: "containment",
     pulseTimer: 0,
     containmentCount: state.containmentCount + 1,
-    lastEvent: "Containment field engaged. Returned to checkpoint."
+    lastEvent: "Containment field engaged. Returned to checkpoint with a recovery tax."
   };
 }
 
@@ -392,12 +453,16 @@ export function resolveContainment(state: GameState): GameState {
 }
 
 export function resolvePulseEscape(state: GameState): GameState {
+  if (state.hunterPhase !== "pulse-hunt") {
+    return state;
+  }
+
   return {
     ...state,
-    signalLevel: Math.min(state.signalLevel, 34),
+    signalLevel: Math.min(state.signalLevel, 30),
     hunterPhase: "aware",
     pulseTimer: 0,
-    lastEvent: "The Warden Angel lost the trail."
+    lastEvent: "The Warden Angel lost the trail, but the signal still lingers."
   };
 }
 
