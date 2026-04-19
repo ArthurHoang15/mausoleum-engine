@@ -1,16 +1,17 @@
 # MAUSOLEUM ENGINE
 
-A browser-first 2D stealth survival prototype built for the `Machines` jam theme.
+A browser-first 2D stealth survival prototype built for the `Machines` jam theme and the GitHub Open Source challenge.
 
 You wake inside an alien machine-cathedral that preserves fallen civilizations as ritualized mechanical memory. Every ability uses and degrades your own body modules while the facility's `Warden Angel` hunts high-signal intrusions through reconfiguring sacred corridors.
 
-## Why this project exists
+## Why This Repo Exists
 
-This repo is designed to support three goals at once:
+This project is built to be playable, readable, and easy to judge:
 
-- a browser-native jam game that is playable end-to-end
-- a readable open-source codebase suitable for the GitHub challenge
-- a strong audiovisual hook for YouTube Playables and Wavedash
+- browser-native and fully end-to-end
+- open-source friendly with a clear architecture story
+- lightweight enough for jam constraints and future asset upgrades
+- documented so judges can understand the loop without reading every file
 
 The current implementation focuses on:
 
@@ -21,26 +22,9 @@ The current implementation focuses on:
 - touch-ready HUD controls layered over a Phaser scene
 - zero gore or self-harm presentation
 
-## Controls
+## Bun-First Workflow
 
-### Desktop
-
-- `WASD`: move
-- `Q`: Eyes scan
-- `Shift`: dash
-- `E`: Core overclock
-- `Space`: interact / hide / use doors
-- `` ` ``: toggle debug overlay
-- `R`: restart after an ending
-
-### Touch
-
-- D-pad on the left
-- `Scan`, `Dash`, `Use`, `Core` buttons on the right
-
-## Run
-
-This project uses `Bun`.
+This repo is intentionally set up around `Bun`.
 
 ```bash
 bun install
@@ -59,9 +43,26 @@ Build production assets:
 bun run build
 ```
 
+## Controls
+
+### Desktop
+
+- `WASD`: move
+- `Q`: Eyes scan
+- `Shift`: dash
+- `E`: Core overclock
+- `Space`: interact / hide / use doors
+- `` ` ``: toggle debug overlay
+- `R`: restart after an ending
+
+### Touch
+
+- D-pad on the left
+- `Scan`, `Dash`, `Use`, `Core` buttons on the right
+
 ## Architecture
 
-The repo is intentionally split so the simulation rules stay readable.
+The repo is intentionally split so simulation, runtime orchestration, and presentation stay readable.
 
 - `src/game/simulation/state.ts`
   - pure game-state rules
@@ -80,7 +81,26 @@ The repo is intentionally split so the simulation rules stay readable.
 - `src/ui/Hud.ts`
   - DOM HUD and touch controls
 - `src/audio/AudioDirector.ts`
-  - lightweight procedural audio cues
+  - lightweight procedural audio cues and phase-reactive states
+
+The scene stays thin by delegating logic into the simulation and runtime directors. That keeps the rules testable, the rendering code focused, and the audio hooks reusable.
+
+## How the Warden Works
+
+The `Warden Angel` reacts to signal, not just distance.
+
+- `Dormant`
+  - the hunter is quiet while signal stays low
+- `Aware`
+  - scans, noisy movement, and environmental pressure begin to matter
+- `Stalking`
+  - sustained signal keeps the hunter active and more persistent
+- `Pulse Hunt`
+  - the Warden directly enters the map and pushes toward the player
+- `Containment`
+  - triggered when the Warden reaches the player during the pulse hunt
+
+The audio director and HUD both react to those state changes so the player gets a clearer sense of escalation even before the Warden appears on screen.
 
 ## Gameplay systems
 
@@ -97,14 +117,6 @@ The repo is intentionally split so the simulation rules stay readable.
 
 Every active ability trades `Charge`, `Condition`, and `Signal`.
 
-### Hunter phases
-
-- `Dormant`
-- `Aware`
-- `Stalking`
-- `Pulse Hunt`
-- `Containment`
-
 The hunter is fed by environmental signal: drone vision, protocol zones, noisy movement, scans, and overclock flares.
 
 ### Debug overlay
@@ -117,6 +129,14 @@ Press `` ` `` to show:
 - collected objectives
 - collected memory fragments
 - current hidden state
+
+## Screenshots / GIFs
+
+Replace these placeholders with the final challenge captures:
+
+- `![Title screen](docs/media/title-screen.png)`
+- `![Warden stalking sequence](docs/media/warden-stalking.gif)`
+- `![Containment ending](docs/media/containment-ending.gif)`
 
 ## Asset strategy
 
@@ -133,4 +153,4 @@ That keeps the HTML5 build lean and lets the team layer final art/audio on top w
 
 Code in this repository is licensed under the `MIT License`.
 
-If your team adds external or custom art/audio later, keep those licenses documented separately from the code license.
+If the team adds external or custom art/audio later, keep those licenses documented separately from the code license and list any required attribution alongside the asset source.
