@@ -13,6 +13,15 @@ interface QueuedActions {
   overclock: boolean;
 }
 
+type StoryState = "onboarding" | "story" | "ending";
+type EndingVariant = "break-the-rite" | "become-the-caretaker" | "escape-incomplete" | null;
+
+interface StoryPresentation {
+  state: StoryState;
+  eyebrow: string;
+  endingVariant: EndingVariant;
+}
+
 export interface HudRenderPayload {
   state: GameState;
   sector: SectorDefinition;
@@ -26,17 +35,20 @@ export class Hud {
   private readonly root: HTMLElement;
   private readonly sectorTitle: HTMLElement;
   private readonly subtitle: HTMLElement;
+  private readonly signalPanel: HTMLElement;
   private readonly objective: HTMLElement;
   private readonly prompt: HTMLElement;
   private readonly hunterPhase: HTMLElement;
   private readonly signalFill: HTMLElement;
+  private readonly storyPanel: HTMLElement;
+  private readonly storyEyebrow: HTMLElement;
+  private readonly storyTitle: HTMLElement;
+  private readonly storyBody: HTMLElement;
   private readonly modules: Record<
     ModuleKind,
     { element: HTMLElement; label: HTMLElement; values: HTMLElement }
   >;
   private readonly toast: HTMLElement;
-  private readonly storyTitle: HTMLElement;
-  private readonly storyBody: HTMLElement;
   private readonly debugPanel: HTMLElement;
   private readonly movement = { up: false, down: false, left: false, right: false };
   private queuedActions: QueuedActions = {
@@ -56,19 +68,26 @@ export class Hud {
             <h1 id="sector-title"></h1>
             <p id="sector-subtitle" class="sector-subtitle"></p>
           </div>
-          <div class="signal-panel">
+          <div class="signal-panel" id="signal-panel">
             <div class="signal-head">
-              <span>Signal</span>
-              <span id="hunter-phase"></span>
+              <span class="signal-label">Hunter state</span>
+              <span id="hunter-phase" class="signal-state"></span>
             </div>
             <div class="signal-bar"><div id="signal-fill"></div></div>
+            <p class="signal-note">Signal rises as you act. Keep moving when the hunt wakes up.</p>
           </div>
         </div>
         <div class="hud-middle">
           <div class="objective-panel">
-            <p class="eyebrow">Current Rite</p>
-            <p id="objective-text"></p>
-            <p id="prompt-text" class="prompt-text"></p>
+            <p class="eyebrow">Objective</p>
+            <div class="objective-block">
+              <p class="panel-label">Current objective</p>
+              <p id="objective-text" class="objective-text"></p>
+            </div>
+            <div class="prompt-block">
+              <p class="panel-label">Immediate prompt</p>
+              <p id="prompt-text" class="prompt-text"></p>
+            </div>
           </div>
           <div class="module-grid">
             <div class="module-card" data-module="eyes"><h3>Eyes</h3><p></p><span></span></div>
@@ -77,27 +96,35 @@ export class Hud {
             <div class="module-card" data-module="core"><h3>Core</h3><p></p><span></span></div>
           </div>
         </div>
-        <div class="story-panel">
-          <p class="eyebrow">Echo</p>
+        <div class="story-panel" id="story-panel" data-story-state="onboarding">
+          <p class="eyebrow" id="story-eyebrow">First steps</p>
           <h2 id="story-title">Wake sequence complete.</h2>
-          <p id="story-body">Move with WASD or the touch pad. Scan with Q, dash with Shift, overclock with E, interact with Space.</p>
+          <p id="story-body">Move with WASD or the touch pad. Tap Scan to reveal hidden paths, Dash to cross sightlines, Use to interact, and Core when the hunt tightens.</p>
+          <div class="story-chips" aria-label="Control summary">
+            <span>Move: WASD or touch pad</span>
+            <span>Scan: Q or tap Scan</span>
+            <span>Dash: Shift or tap Dash</span>
+            <span>Use: Space or tap Use</span>
+            <span>Core: E or tap Core</span>
+          </div>
         </div>
         <div class="toast" id="toast"></div>
         <pre class="debug-panel" id="debug-panel"></pre>
         <div class="touch-controls">
           <div class="touch-pad">
-            <button data-move="up">▲</button>
+            <p class="touch-label">Move</p>
+            <button data-move="up" aria-label="Move up">▲</button>
             <div class="touch-row">
-              <button data-move="left">◀</button>
-              <button data-move="down">▼</button>
-              <button data-move="right">▶</button>
+              <button data-move="left" aria-label="Move left">◀</button>
+              <button data-move="down" aria-label="Move down">▼</button>
+              <button data-move="right" aria-label="Move right">▶</button>
             </div>
           </div>
           <div class="touch-actions">
-            <button data-action="scan">Scan</button>
-            <button data-action="dash">Dash</button>
-            <button data-action="interact">Use</button>
-            <button data-action="overclock">Core</button>
+            <button data-action="scan"><span>Scan</span><small>Reveal</small></button>
+            <button data-action="dash"><span>Dash</span><small>Cross</small></button>
+            <button data-action="interact"><span>Use</span><small>Act</small></button>
+            <button data-action="overclock"><span>Core</span><small>Flare</small></button>
           </div>
         </div>
       </div>
@@ -105,13 +132,16 @@ export class Hud {
 
     this.sectorTitle = this.root.querySelector("#sector-title") as HTMLElement;
     this.subtitle = this.root.querySelector("#sector-subtitle") as HTMLElement;
+    this.signalPanel = this.root.querySelector("#signal-panel") as HTMLElement;
     this.objective = this.root.querySelector("#objective-text") as HTMLElement;
     this.prompt = this.root.querySelector("#prompt-text") as HTMLElement;
     this.hunterPhase = this.root.querySelector("#hunter-phase") as HTMLElement;
     this.signalFill = this.root.querySelector("#signal-fill") as HTMLElement;
-    this.toast = this.root.querySelector("#toast") as HTMLElement;
+    this.storyPanel = this.root.querySelector("#story-panel") as HTMLElement;
+    this.storyEyebrow = this.root.querySelector("#story-eyebrow") as HTMLElement;
     this.storyTitle = this.root.querySelector("#story-title") as HTMLElement;
     this.storyBody = this.root.querySelector("#story-body") as HTMLElement;
+    this.toast = this.root.querySelector("#toast") as HTMLElement;
     this.debugPanel = this.root.querySelector("#debug-panel") as HTMLElement;
     this.modules = {
       eyes: this.getModuleCard("eyes"),
@@ -135,7 +165,10 @@ export class Hud {
     };
   }
 
-  private bindMoveButton(button: HTMLButtonElement, direction: keyof typeof this.movement) {
+  private bindMoveButton(
+    button: HTMLButtonElement,
+    direction: keyof typeof this.movement
+  ) {
     const down = (event: Event) => {
       event.preventDefault();
       this.movement[direction] = true;
@@ -206,6 +239,16 @@ export class Hud {
   }
 
   showStory(title: string, body: string): void {
+    const presentation = this.resolveStoryPresentation(title, body);
+
+    this.storyPanel.dataset.storyState = presentation.state;
+    if (presentation.endingVariant) {
+      this.storyPanel.dataset.endingVariant = presentation.endingVariant;
+    } else {
+      delete this.storyPanel.dataset.endingVariant;
+    }
+
+    this.storyEyebrow.textContent = presentation.eyebrow;
     this.storyTitle.textContent = title;
     this.storyBody.textContent = body;
   }
@@ -225,6 +268,7 @@ export class Hud {
 
     this.sectorTitle.textContent = sector.name;
     this.subtitle.textContent = sector.subtitle;
+    this.signalPanel.dataset.phase = state.hunterPhase;
     this.objective.textContent = objective;
     this.prompt.textContent = prompt;
     this.hunterPhase.textContent = this.formatPhase(state.hunterPhase);
@@ -268,5 +312,49 @@ export class Hud {
     }
 
     return "critical";
+  }
+
+  private resolveStoryPresentation(title: string, body: string): StoryPresentation {
+    const titleText = title.toLowerCase();
+    const normalized = `${title} ${body}`.toLowerCase();
+
+    if (
+      titleText.includes("break the rite") ||
+      normalized.includes("shatter the mausoleum engine")
+    ) {
+      return {
+        state: "ending",
+        eyebrow: "Final rite",
+        endingVariant: "break-the-rite"
+      };
+    }
+
+    if (
+      titleText.includes("become the caretaker") ||
+      normalized.includes("guardian of a dead rite")
+    ) {
+      return {
+        state: "ending",
+        eyebrow: "Final rite",
+        endingVariant: "become-the-caretaker"
+      };
+    }
+
+    if (
+      titleText.includes("escape incomplete") ||
+      normalized.includes("escape alive")
+    ) {
+      return {
+        state: "ending",
+        eyebrow: "Final rite",
+        endingVariant: "escape-incomplete"
+      };
+    }
+
+    return {
+      state: "story",
+      eyebrow: "Echo",
+      endingVariant: null
+    };
   }
 }

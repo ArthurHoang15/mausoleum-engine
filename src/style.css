@@ -24,6 +24,11 @@ body {
   min-height: 100vh;
   overflow: hidden;
   background: #05070d;
+  overscroll-behavior: none;
+}
+
+button {
+  font: inherit;
 }
 
 #app-shell {
@@ -55,15 +60,23 @@ body {
   display: grid;
   grid-template-rows: auto auto 1fr auto;
   min-height: 100vh;
-  padding: 16px;
+  padding: clamp(12px, 1.8vw, 18px);
   gap: 12px;
 }
 
 .hud-top,
 .hud-middle {
-  display: flex;
-  justify-content: space-between;
-  gap: 16px;
+  display: grid;
+  gap: 12px;
+  align-items: start;
+}
+
+.hud-top {
+  grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.85fr);
+}
+
+.hud-middle {
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
 }
 
 .hud-brand,
@@ -82,15 +95,35 @@ body {
 .signal-panel,
 .objective-panel,
 .story-panel {
+  border-radius: 18px;
   padding: 14px 16px;
 }
 
 .hud-brand {
-  max-width: 520px;
+  max-width: 560px;
 }
 
 .signal-panel {
-  width: min(360px, 38vw);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.signal-panel[data-phase="dormant"] {
+  border-color: rgba(165, 215, 255, 0.18);
+}
+
+.signal-panel[data-phase="aware"] {
+  border-color: rgba(255, 208, 118, 0.3);
+}
+
+.signal-panel[data-phase="pulse-hunt"] {
+  border-color: rgba(255, 126, 95, 0.45);
+}
+
+.signal-panel[data-phase="containment"] {
+  border-color: rgba(255, 126, 126, 0.48);
 }
 
 .eyebrow {
@@ -107,30 +140,54 @@ h2,
 h3,
 p,
 span,
+small,
 pre {
   margin: 0;
 }
 
 h1 {
   font-size: clamp(20px, 3vw, 32px);
+  text-wrap: balance;
 }
 
 .sector-subtitle,
-#objective-text,
+.objective-text,
 #story-body,
-.prompt-text {
+.prompt-text,
+.signal-note {
   color: rgba(245, 247, 255, 0.82);
-  line-height: 1.45;
+  line-height: 1.5;
 }
 
 .signal-head {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 10px;
+  gap: 12px;
   font-family: "Orbitron", "Space Grotesk", sans-serif;
   font-size: 12px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
+}
+
+.signal-label,
+.signal-state {
+  white-space: nowrap;
+}
+
+.signal-state {
+  color: #f6f7fb;
+}
+
+.signal-panel[data-phase="aware"] .signal-state {
+  color: #ffd78c;
+}
+
+.signal-panel[data-phase="pulse-hunt"] .signal-state {
+  color: #ff9b7c;
+}
+
+.signal-panel[data-phase="containment"] .signal-state {
+  color: #ff8e95;
 }
 
 .signal-bar {
@@ -148,8 +205,51 @@ h1 {
   box-shadow: 0 0 22px rgba(255, 143, 110, 0.55);
 }
 
+.signal-note {
+  font-size: 12px;
+}
+
 .objective-panel {
-  flex: 1;
+  display: grid;
+  gap: 12px;
+  align-self: stretch;
+}
+
+.panel-label {
+  margin: 0 0 6px;
+  font-family: "Orbitron", "Space Grotesk", sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(165, 215, 255, 0.9);
+}
+
+.objective-block,
+.prompt-block {
+  display: grid;
+  gap: 6px;
+  padding: 12px 13px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: rgba(10, 15, 25, 0.56);
+}
+
+.objective-block {
+  border-left: 3px solid rgba(165, 215, 255, 0.72);
+}
+
+.prompt-block {
+  border-left: 3px solid rgba(255, 208, 118, 0.68);
+}
+
+.objective-text {
+  font-size: clamp(17px, 2vw, 22px);
+  text-wrap: balance;
+}
+
+.prompt-text {
+  font-size: 14px;
+  color: rgba(245, 247, 255, 0.76);
 }
 
 .module-grid {
@@ -160,25 +260,30 @@ h1 {
 }
 
 .module-card {
+  display: grid;
+  align-content: start;
+  gap: 8px;
   padding: 12px;
-  min-height: 110px;
+  min-height: 116px;
+  border-radius: 16px;
 }
 
 .module-card h3 {
-  margin-bottom: 8px;
+  margin-bottom: 2px;
   font-family: "Orbitron", "Space Grotesk", sans-serif;
   font-size: 15px;
 }
 
 .module-card p {
-  margin-bottom: 10px;
   font-size: 12px;
   letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(165, 215, 255, 0.88);
 }
 
 .module-card span {
   font-size: 13px;
-  line-height: 1.4;
+  line-height: 1.45;
   color: rgba(245, 247, 255, 0.8);
 }
 
@@ -195,16 +300,92 @@ h1 {
 }
 
 .story-panel {
-  max-width: 580px;
+  display: grid;
+  gap: 12px;
+  align-content: start;
+  border-radius: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.story-panel[data-story-state="onboarding"] {
+  border-color: rgba(165, 215, 255, 0.24);
+  background:
+    radial-gradient(circle at top left, rgba(104, 163, 255, 0.12), transparent 28%),
+    rgba(7, 11, 20, 0.84);
+}
+
+.story-panel[data-story-state="story"] {
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.story-panel[data-story-state="ending"] {
+  border-color: rgba(255, 173, 122, 0.36);
+  box-shadow:
+    0 0 0 1px rgba(255, 173, 122, 0.08),
+    0 16px 42px rgba(0, 0, 0, 0.34);
+}
+
+.story-panel[data-ending-variant="break-the-rite"] {
+  background:
+    radial-gradient(circle at top right, rgba(255, 126, 95, 0.18), transparent 30%),
+    rgba(7, 11, 20, 0.86);
+}
+
+.story-panel[data-ending-variant="become-the-caretaker"] {
+  background:
+    radial-gradient(circle at top right, rgba(110, 231, 183, 0.16), transparent 30%),
+    rgba(7, 11, 20, 0.86);
+}
+
+.story-panel[data-ending-variant="escape-incomplete"] {
+  background:
+    radial-gradient(circle at top right, rgba(255, 208, 118, 0.16), transparent 30%),
+    rgba(7, 11, 20, 0.86);
+}
+
+.story-panel #story-title {
+  font-size: clamp(22px, 2.6vw, 34px);
+  text-wrap: balance;
+}
+
+.story-panel[data-story-state="ending"] #story-title {
+  font-size: clamp(24px, 3vw, 38px);
+}
+
+.story-panel[data-story-state="ending"] #story-body {
+  color: rgba(255, 244, 235, 0.92);
+}
+
+.story-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.story-chips span {
+  padding: 7px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(12, 17, 28, 0.72);
+  color: rgba(245, 247, 255, 0.8);
+  font-size: 12px;
+  letter-spacing: 0.02em;
+}
+
+.story-panel[data-story-state="ending"] .story-chips {
+  display: none;
 }
 
 .toast {
   position: absolute;
   left: 50%;
-  bottom: 156px;
+  bottom: clamp(126px, 18vh, 192px);
   transform: translateX(-50%);
   padding: 10px 16px;
-  background: rgba(7, 11, 20, 0.88);
+  max-width: min(90vw, 540px);
+  text-align: center;
+  background: rgba(7, 11, 20, 0.9);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 999px;
   opacity: 0;
@@ -233,23 +414,33 @@ h1 {
 }
 
 .touch-controls {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: minmax(180px, auto) minmax(0, 1fr);
+  gap: 12px;
   align-items: end;
   margin-top: auto;
+  padding-bottom: env(safe-area-inset-bottom);
   pointer-events: none;
 }
 
 .touch-pad,
 .touch-actions {
-  display: flex;
+  display: grid;
   gap: 10px;
   pointer-events: auto;
 }
 
 .touch-pad {
-  flex-direction: column;
-  align-items: center;
+  justify-items: center;
+  align-content: end;
+}
+
+.touch-label {
+  font-family: "Orbitron", "Space Grotesk", sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(165, 215, 255, 0.88);
 }
 
 .touch-row {
@@ -257,30 +448,95 @@ h1 {
   gap: 10px;
 }
 
+.touch-actions {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
 .touch-controls button {
-  width: 68px;
-  height: 68px;
-  border-radius: 22px;
   border: 1px solid rgba(255, 255, 255, 0.12);
   background: rgba(8, 12, 22, 0.84);
   color: #f6f7fb;
-  font-family: "Orbitron", "Space Grotesk", sans-serif;
-  font-size: 14px;
+  border-radius: 22px;
+  min-height: 72px;
+  min-width: 72px;
+  padding: 10px 12px;
+  cursor: pointer;
   pointer-events: auto;
+  touch-action: manipulation;
+  user-select: none;
+  transition:
+    transform 120ms ease,
+    border-color 120ms ease,
+    background-color 120ms ease,
+    box-shadow 120ms ease;
 }
 
-.touch-actions button:last-child {
+.touch-pad button {
+  width: 72px;
+  height: 72px;
+  display: grid;
+  place-items: center;
+  font-size: 18px;
+  font-family: "Orbitron", "Space Grotesk", sans-serif;
+}
+
+.touch-actions button {
+  display: grid;
+  place-items: center;
+  gap: 2px;
+  min-width: 0;
+  min-height: 84px;
+  text-align: center;
+  font-family: "Orbitron", "Space Grotesk", sans-serif;
+}
+
+.touch-actions button span {
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.touch-actions button small {
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(245, 247, 255, 0.7);
+}
+
+.touch-controls button:hover {
+  border-color: rgba(165, 215, 255, 0.36);
+}
+
+.touch-controls button:active {
+  transform: translateY(1px) scale(0.98);
+  box-shadow: 0 0 0 1px rgba(165, 215, 255, 0.08);
+}
+
+.touch-controls button:focus-visible {
+  outline: 2px solid rgba(165, 215, 255, 0.8);
+  outline-offset: 2px;
+}
+
+.touch-actions button[data-action="overclock"] {
   background: linear-gradient(180deg, rgba(255, 173, 122, 0.35), rgba(255, 126, 93, 0.32));
 }
 
 @media (max-width: 960px) {
   .hud-top,
   .hud-middle {
-    flex-direction: column;
+    grid-template-columns: 1fr;
   }
 
   .module-grid {
     min-width: auto;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .touch-controls {
+    grid-template-columns: 1fr;
+  }
+
+  .touch-actions {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -291,6 +547,56 @@ h1 {
   }
 
   .toast {
-    bottom: 200px;
+    bottom: 208px;
+  }
+}
+
+@media (max-width: 720px) {
+  .hud-shell {
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .module-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .touch-pad button {
+    width: 64px;
+    height: 64px;
+  }
+
+  .touch-actions button {
+    min-height: 76px;
+  }
+
+  .story-chips {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-height: 760px) and (min-width: 961px) {
+  .hud-shell {
+    gap: 10px;
+  }
+
+  .objective-block,
+  .prompt-block,
+  .story-panel {
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
+
+  .module-card {
+    min-height: 102px;
+  }
+
+  .touch-actions button {
+    min-height: 76px;
+  }
+
+  .toast {
+    bottom: 176px;
   }
 }
