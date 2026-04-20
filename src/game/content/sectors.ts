@@ -3,6 +3,7 @@ import type {
   ModuleKind,
   SectorId
 } from "../simulation/state";
+import type { VisualThemeId } from "./visualThemes";
 
 export interface Point {
   x: number;
@@ -86,15 +87,12 @@ export interface SectorDefinition {
   name: string;
   subtitle: string;
   moduleFocus: ModuleKind;
+  visualThemeId: VisualThemeId;
   introLine: string;
   objectiveLabel: string;
   objectiveHint: string;
   size: { width: number; height: number };
   start: Point;
-  floorColor: number;
-  wallColor: number;
-  accentColor: number;
-  pulseBackdropColor: number;
   walls: WallDefinition[];
   doors: DoorDefinition[];
   hidingSpots: HidingSpotDefinition[];
@@ -108,6 +106,7 @@ const hub: SectorDefinition = {
   name: "The Hollow Spine",
   subtitle: "A maintenance nave humming with dead prayers.",
   moduleFocus: "core",
+  visualThemeId: "hollow-spine",
   introLine:
     "The spine of the Mausoleum Engine is quiet, but never truly safe.",
   objectiveLabel: "Traverse the unlocked sectors and recover each rite-key.",
@@ -115,10 +114,6 @@ const hub: SectorDefinition = {
     "The Lens Basilica is open. Recover the first relic and return here.",
   size: { width: 1400, height: 900 },
   start: { x: 700, y: 700 },
-  floorColor: 0x0f1221,
-  wallColor: 0x3d4b73,
-  accentColor: 0xa8d1ff,
-  pulseBackdropColor: 0x12162b,
   walls: [
     { id: "hub-altar", rect: { x: 560, y: 250, width: 280, height: 60 } },
     { id: "hub-left-wall", rect: { x: 220, y: 250, width: 80, height: 400 } },
@@ -218,16 +213,13 @@ const lensBasilica: SectorDefinition = {
   name: "Lens Basilica",
   subtitle: "Mirrored aisles and saint-machines of sight.",
   moduleFocus: "eyes",
+  visualThemeId: "lens-basilica",
   introLine:
     "The basilica keeps looking at you, even when every lens is cracked.",
   objectiveLabel: "Recover the spectral lens key and reveal the first truth.",
   objectiveHint: "Use Eyes scans to reveal a hidden mineral seam and patrol lines.",
   size: { width: 1600, height: 900 },
   start: { x: 140, y: 460 },
-  floorColor: 0x11182a,
-  wallColor: 0x42567b,
-  accentColor: 0xa5d7ff,
-  pulseBackdropColor: 0x07131f,
   walls: [
     { id: "lens-center-left", rect: { x: 430, y: 180, width: 70, height: 500 } },
     {
@@ -360,15 +352,12 @@ const ossuaryShafts: SectorDefinition = {
   name: "Ossuary Shafts",
   subtitle: "Vertical graves and transport coffins in endless suspension.",
   moduleFocus: "legs",
+  visualThemeId: "ossuary-shafts",
   introLine: "Every rail here was built to move bodies upward or away.",
   objectiveLabel: "Claim the ascent sigil and unlock the upper route.",
   objectiveHint: "Dash through sightlines and use shadows between the hanging ossuaries.",
   size: { width: 1600, height: 900 },
   start: { x: 150, y: 760 },
-  floorColor: 0x151224,
-  wallColor: 0x5a4f78,
-  accentColor: 0xd7c1ff,
-  pulseBackdropColor: 0x130a22,
   walls: [
     { id: "ossuary-column-left", rect: { x: 460, y: 140, width: 90, height: 620 } },
     {
@@ -500,16 +489,13 @@ const choirArchives: SectorDefinition = {
   name: "Choir Archives",
   subtitle: "Language organs and signal liturgies whisper through the walls.",
   moduleFocus: "neural",
+  visualThemeId: "choir-archives",
   introLine:
     "The archives do not store facts. They rehearse them until they become doctrine.",
   objectiveLabel: "Decode the catastrophe hymn and steal the archive key.",
   objectiveHint: "Neural actions are strong here, but the facility can hear every one of them.",
   size: { width: 1600, height: 900 },
   start: { x: 160, y: 430 },
-  floorColor: 0x11141b,
-  wallColor: 0x4f6f62,
-  accentColor: 0x9df5d3,
-  pulseBackdropColor: 0x071712,
   walls: [
     { id: "choir-column-left", rect: { x: 470, y: 150, width: 80, height: 560 } },
     {
@@ -640,16 +626,13 @@ const reliquaryFurnace: SectorDefinition = {
   name: "Reliquary Furnace",
   subtitle: "The hot sacred heart where choice becomes rite.",
   moduleFocus: "core",
+  visualThemeId: "reliquary-furnace",
   introLine:
     "The furnace knows your shape. It has been preparing a place for you.",
   objectiveLabel: "Seize the living key, survive the final hunt, then choose the rite.",
   objectiveHint: "Core overclock keeps you alive here, but every flare calls the Warden.",
   size: { width: 1600, height: 900 },
   start: { x: 150, y: 440 },
-  floorColor: 0x211411,
-  wallColor: 0x7b4e40,
-  accentColor: 0xffbc8f,
-  pulseBackdropColor: 0x2e140d,
   walls: [
     { id: "furnace-left-pillar", rect: { x: 490, y: 150, width: 80, height: 550 } },
     {

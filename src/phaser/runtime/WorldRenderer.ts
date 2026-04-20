@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 
 import { sectorsById, type InteractionDefinition, type SectorDefinition } from "../../game/content/sectors";
+import { getSectorVisualTheme } from "../../game/content/visualThemes";
 import type { GameController } from "../../game/simulation/controller";
 import type {
   RenderedDoor,
@@ -17,7 +18,7 @@ import {
 } from "./world-logic";
 
 export class WorldRenderer {
-  private readonly background: Phaser.GameObjects.Rectangle;
+  private readonly background: Phaser.GameObjects.TileSprite;
   private readonly starfield: Phaser.GameObjects.Graphics;
   private _currentSector!: SectorDefinition;
   private pulseActive = false;
@@ -32,7 +33,10 @@ export class WorldRenderer {
     private readonly scene: Phaser.Scene,
     private readonly controller: GameController
   ) {
-    this.background = this.scene.add.rectangle(0, 0, 10, 10, 0x000000).setOrigin(0);
+    this.background = this.scene.add
+      .tileSprite(0, 0, 32, 32, "pixel-floor-tile")
+      .setOrigin(0)
+      .setDepth(-10);
     this.starfield = this.scene.add.graphics();
   }
 
@@ -72,8 +76,9 @@ export class WorldRenderer {
     } = {}
   ): SectorDefinition {
     this._currentSector = sectorsById[sectorId];
+    const theme = getSectorVisualTheme(this._currentSector.visualThemeId);
 
-    this.background.setFillStyle(this._currentSector.floorColor, 1);
+    this.background.setTint(theme.palette.floorBase);
     this.background.setSize(
       this._currentSector.size.width,
       this._currentSector.size.height
@@ -178,7 +183,8 @@ export class WorldRenderer {
   private drawStarfield(): void {
     this.starfield.clear();
     this.starfield.setAlpha(this.pulseActive ? 1 : 0.25);
-    this.starfield.fillStyle(this._currentSector.pulseBackdropColor, 1);
+    const theme = getSectorVisualTheme(this._currentSector.visualThemeId);
+    this.starfield.fillStyle(theme.palette.pulseBackdrop, 1);
     this.starfield.fillRect(
       0,
       0,
@@ -189,7 +195,7 @@ export class WorldRenderer {
     const random = new Phaser.Math.RandomDataGenerator([this._currentSector.id]);
     for (let index = 0; index < 120; index += 1) {
       this.starfield.fillStyle(
-        random.pick([0xffffff, this._currentSector.accentColor, 0xbdd7ff]),
+        random.pick(theme.palette.starfield),
         random.realInRange(0.2, 0.95)
       );
       this.starfield.fillCircle(
@@ -201,6 +207,7 @@ export class WorldRenderer {
   }
 
   private buildWalls(): void {
+    const theme = getSectorVisualTheme(this._currentSector.visualThemeId);
     this._walls = this._currentSector.walls.map((def) => ({
       def,
       object: this.scene.add
@@ -209,14 +216,15 @@ export class WorldRenderer {
           def.rect.y + def.rect.height / 2,
           def.rect.width,
           def.rect.height,
-          this._currentSector.wallColor,
+          theme.palette.wallBase,
           0.92
         )
-        .setStrokeStyle(2, this._currentSector.accentColor, 0.35)
+        .setStrokeStyle(2, theme.palette.wallTrim, 0.35)
     }));
   }
 
   private buildDoors(): void {
+    const theme = getSectorVisualTheme(this._currentSector.visualThemeId);
     this._doors = this._currentSector.doors.map((def) => {
       const unlocked =
         (!def.requiresObjective ||
@@ -228,10 +236,10 @@ export class WorldRenderer {
           def.rect.y + def.rect.height / 2,
           def.rect.width,
           def.rect.height,
-          unlocked ? this._currentSector.accentColor : 0x52586d,
+          unlocked ? theme.palette.accent : 0x52586d,
           0.55
         )
-        .setStrokeStyle(2, 0xf7fbff, 0.4);
+        .setStrokeStyle(2, theme.palette.glow, 0.4);
       const label = this.scene.add
         .text(object.x, object.y, def.label, {
           fontFamily: "'Space Grotesk', sans-serif",
@@ -303,6 +311,7 @@ export class WorldRenderer {
   }
 
   private buildProtocolZones(): void {
+    const theme = getSectorVisualTheme(this._currentSector.visualThemeId);
     this._protocolZones = this._currentSector.protocolZones.map((def) => ({
       def,
       object: this.scene.add
@@ -314,7 +323,16 @@ export class WorldRenderer {
           def.tint,
           0.12
         )
-        .setStrokeStyle(1, def.tint, 0.3)
+        .setStrokeStyle(
+          1,
+          Phaser.Display.Color.Interpolate.ColorWithColor(
+            Phaser.Display.Color.ValueToColor(def.tint),
+            Phaser.Display.Color.ValueToColor(theme.palette.glow),
+            100,
+            40
+          ).color,
+          0.3
+        )
     }));
   }
 

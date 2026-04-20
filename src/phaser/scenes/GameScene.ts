@@ -7,6 +7,7 @@ import { InteractionDirector } from "../runtime/InteractionDirector";
 import { PlayerDirector } from "../runtime/PlayerDirector";
 import { combineMovementInput } from "../runtime/player-math";
 import { WorldRenderer } from "../runtime/WorldRenderer";
+import { DEFAULT_CAMERA_ZOOM } from "../config/pixel";
 
 export class GameScene extends Phaser.Scene {
   private keys!: Record<string, Phaser.Input.Keyboard.Key>;
@@ -51,7 +52,8 @@ export class GameScene extends Phaser.Scene {
     );
 
     this.cameras.main.startFollow(this.playerDirector.sprite, true, 0.08, 0.08);
-    this.cameras.main.setZoom(1);
+    this.cameras.main.setZoom(DEFAULT_CAMERA_ZOOM);
+    this.cameras.main.roundPixels = true;
 
     this.input.on("pointerdown", () => {
       this.services.audio.unlock();
