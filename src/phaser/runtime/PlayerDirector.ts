@@ -1,11 +1,14 @@
 import Phaser from "phaser";
 
+import { PIXEL_ANIMATION_KEYS } from "../assets/pixelManifest";
 import type { RenderedWall, VectorLike } from "./types";
 export { combineMovementInput } from "./player-math";
+import { createPixelAnchor } from "./pixelPresentation";
 import { evaluateHiddenMovement } from "./stealth-logic";
 
 export class PlayerDirector {
-  private readonly player: Phaser.GameObjects.Arc;
+  private readonly player: Phaser.GameObjects.Container;
+  private readonly playerSprite: Phaser.GameObjects.Sprite;
   private readonly halo: Phaser.GameObjects.Arc;
   private hidden = false;
   private dashTimer = 0;
@@ -16,10 +19,21 @@ export class PlayerDirector {
 
   constructor(private readonly scene: Phaser.Scene) {
     this.halo = this.scene.add.circle(0, 0, 24, 0xa9d6ff, 0.18).setDepth(20);
-    this.player = this.scene.add.circle(0, 0, 16, 0xf4f7ff, 1).setDepth(21);
+    const presentation = createPixelAnchor(this.scene, {
+      x: 0,
+      y: 0,
+      texture: "pixel-player-proxy",
+      animationKey: PIXEL_ANIMATION_KEYS.playerIdle,
+      depth: 21,
+      scale: 1.35,
+      spriteOffsetY: -1
+    });
+    this.player = presentation.body;
+    this.playerSprite = presentation.sprite;
+    this.updatePresentation(new Phaser.Math.Vector2(), new Phaser.Math.Vector2());
   }
 
-  get sprite(): Phaser.GameObjects.Arc {
+  get sprite(): Phaser.GameObjects.Container {
     return this.player;
   }
 
@@ -49,12 +63,14 @@ export class PlayerDirector {
     this.dashTimer = 0;
     this.dashVector.set(0, 0);
     this.hideAnchor = null;
+    this.updatePresentation(new Phaser.Math.Vector2(), new Phaser.Math.Vector2());
   }
 
   setHidden(hidden: boolean): void {
     this.hidden = hidden;
     this.player.setAlpha(hidden ? 0.3 : 1);
     this.halo.setAlpha(hidden ? 0.12 : 0.18);
+    this.playerSprite.setTint(hidden ? 0xa9d6ff : 0xffffff);
     this.hideAnchor = hidden ? this.position : null;
   }
 
@@ -137,9 +153,35 @@ export class PlayerDirector {
 
     this.player.setPosition(resolvedX, resolvedY);
     this.halo.setPosition(resolvedX, resolvedY);
+    this.updatePresentation(move, dash);
     if (this.hidden) {
       this.hideAnchor ??= this.position;
     }
+  }
+
+  private updatePresentation(
+    move: Phaser.Math.Vector2,
+    dash: Phaser.Math.Vector2
+  ): void {
+    const motionX = Math.abs(move.x) > 0.01 ? move.x : dash.x;
+    if (Math.abs(motionX) > 0.01) {
+      this.playerSprite.setFlipX(motionX < 0);
+    }
+
+    const moving = move.lengthSq() > 0.01 || dash.lengthSq() > 1;
+    const animationKey = moving
+      ? PIXEL_ANIMATION_KEYS.playerWalk
+      : PIXEL_ANIMATION_KEYS.playerIdle;
+    if (
+      this.playerSprite.anims.currentAnim?.key !== animationKey ||
+      !this.playerSprite.anims.isPlaying
+    ) {
+      this.playerSprite.play(animationKey, true);
+    }
+
+    const dashStretch = this.dashTimer > 0 ? 1 + this.dashTimer * 0.9 : 1;
+    this.playerSprite.setScale(1.35 * dashStretch, 1.35 / dashStretch);
+    this.halo.setScale(0.95 + dashStretch * 0.18);
   }
 
   private resolveAxis(

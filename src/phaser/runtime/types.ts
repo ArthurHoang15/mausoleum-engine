@@ -8,6 +8,7 @@ import type {
   ProtocolZoneDefinition,
   WallDefinition
 } from "../../game/content/sectors";
+import type { RuntimeRenderAnchor } from "./pixelPresentation";
 
 export interface VectorLike {
   x: number;
@@ -43,15 +44,19 @@ export type RenderedProtocol = {
 
 export type RenderedDrone = {
   def: DroneDefinition;
-  body: Phaser.GameObjects.Arc;
+  body: RuntimeRenderAnchor;
   halo: Phaser.GameObjects.Arc;
   vision: Phaser.GameObjects.Graphics;
+  sprite?: Phaser.GameObjects.Sprite;
+  fx?: Phaser.GameObjects.Sprite;
   pathIndex: number;
   direction: 1 | -1;
   facingAngle: number;
 };
 
 export type Warden = {
-  body: Phaser.GameObjects.Arc;
+  body: RuntimeRenderAnchor;
   halo: Phaser.GameObjects.Arc;
+  sprite?: Phaser.GameObjects.Sprite;
+  fx?: Phaser.GameObjects.Sprite;
 };

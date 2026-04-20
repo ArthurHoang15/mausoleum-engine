@@ -5,6 +5,7 @@ import type { HunterPhase, ModuleKind } from "../../game/simulation/state";
 import type { AudioDirector } from "../../audio/AudioDirector";
 import type { Hud } from "../../ui/Hud";
 import type { SectorDefinition } from "../../game/content/sectors";
+import { PIXEL_ANIMATION_KEYS } from "../assets/pixelManifest";
 import type {
   RenderedDrone,
   RenderedProtocol,
@@ -12,6 +13,13 @@ import type {
   Warden
 } from "./types";
 import type { PlayerDirector } from "./PlayerDirector";
+import {
+  createPixelAnchor
+} from "./pixelPresentation";
+import {
+  getPresentationFloatOffset,
+  getPresentationPulseFrame
+} from "./pixelPresentationMath";
 import type { WorldRenderer } from "./WorldRenderer";
 import {
   advanceDronePatrolState,
@@ -71,6 +79,7 @@ export class HunterDirector {
     debugEnabled: boolean
   ): void {
     for (const drone of drones) {
+      this.ensureDronePresentation(drone);
       const next = advanceDronePatrolState(
         {
           position: { x: drone.body.x, y: drone.body.y },
@@ -103,6 +112,25 @@ export class HunterDirector {
         currentTarget.x,
         currentTarget.y
       );
+
+      const elapsedMs = this.scene.time.now;
+      const hoverOffset = getPresentationFloatOffset(
+        elapsedMs,
+        2,
+        1100,
+        drone.pathIndex * 0.6
+      );
+      const pulseFrame = getPresentationPulseFrame(
+        elapsedMs + drone.pathIndex * 45
+      );
+
+      drone.body.setRotation(drone.facingAngle + Math.PI / 2);
+      drone.halo.setScale(0.9 + pulseFrame * 0.06);
+      drone.sprite?.setY(hoverOffset);
+      drone.fx
+        ?.setFrame(pulseFrame)
+        .setY(hoverOffset)
+        .setAlpha((scanRevealTimer > 0 || debugEnabled ? 0.18 : 0.08) + pulseFrame * 0.01);
 
       drone.vision.clear();
       if (scanRevealTimer > 0 || debugEnabled) {
@@ -143,6 +171,15 @@ export class HunterDirector {
       });
       signal += strength * 22 * delta;
       drone.halo.setAlpha(0.08 + strength * 0.12);
+      drone.sprite?.setTint(
+        Phaser.Display.Color.Interpolate.ColorWithColor(
+          Phaser.Display.Color.ValueToColor(drone.def.tint),
+          Phaser.Display.Color.ValueToColor(0xf4f7ff),
+          100,
+          22 + strength * 78
+        ).color
+      );
+      drone.fx?.setTint(drone.def.tint).setAlpha(0.06 + strength * 0.18);
     }
 
     for (const zone of protocolZones) {
@@ -213,10 +250,30 @@ export class HunterDirector {
     }
 
     if (!this.warden) {
-      const spawn = new Phaser.Math.Vector2(currentSector.size.width - 140, 120);
+      const spawn = new Phaser.Math.Vector2(
+        currentSector.size.width - 140,
+        120
+      );
+      const presentation = createPixelAnchor(this.scene, {
+        x: spawn.x,
+        y: spawn.y,
+        texture: "pixel-warden-proxy",
+        animationKey: PIXEL_ANIMATION_KEYS.wardenFloat,
+        depth: 25,
+        scale: 1.1,
+        spriteOffsetY: -4,
+        fxTexture: "pixel-scan-fx-proxy",
+        fxScale: 1.7,
+        fxAlpha: 0.16,
+        fxOffsetY: 8
+      });
       this.warden = {
-        body: this.scene.add.circle(spawn.x, spawn.y, 22, 0xf8f0ff, 0.95).setDepth(25),
-        halo: this.scene.add.circle(spawn.x, spawn.y, 56, 0xcab7ff, 0.16).setDepth(24)
+        body: presentation.body,
+        halo: this.scene.add
+          .circle(spawn.x, spawn.y, 56, 0xcab7ff, 0.16)
+          .setDepth(24),
+        sprite: presentation.sprite,
+        fx: presentation.fx
       };
     }
 
@@ -245,6 +302,22 @@ export class HunterDirector {
       this.warden.halo.y = this.warden.body.y;
     }
 
+    const elapsedMs = this.scene.time.now;
+    const pulseFrame = getPresentationPulseFrame(elapsedMs, 4, 120);
+    const hoverOffset = getPresentationFloatOffset(elapsedMs, 3, 1800, Math.PI / 6);
+    const facingX = behavior.target.x - this.warden.body.x;
+    this.warden.halo.setScale(1 + pulseFrame * 0.08);
+    this.warden.sprite?.setFlipX(facingX < 0).setY(-4 + hoverOffset);
+    this.warden.fx
+      ?.setFrame(pulseFrame)
+      .setY(10 + hoverOffset * 0.4)
+      .setAlpha(
+        phase === "pulse-hunt" ? 0.28 : phase === "stalking" ? 0.18 : 0.1
+      );
+    this.warden.sprite?.setTint(
+      phase === "pulse-hunt" ? 0xf8f0ff : 0xd9e3ff
+    );
+
     if (phase === "pulse-hunt" && playerDirector.isHidden) {
       playerDirector.addConcealment(delta);
       if (playerDirector.concealmentDuration > 2.5) {
@@ -269,5 +342,31 @@ export class HunterDirector {
       this.hud.showToast("Containment field engaged.");
       this.containmentTimer = 1.2;
     }
+  }
+
+  private ensureDronePresentation(drone: RenderedDrone): void {
+    if (drone.sprite) {
+      return;
+    }
+
+    const startX = drone.body.x;
+    const startY = drone.body.y;
+    drone.body.destroy();
+
+    const presentation = createPixelAnchor(this.scene, {
+      x: startX,
+      y: startY,
+      texture: "pixel-drone-proxy",
+      animationKey: PIXEL_ANIMATION_KEYS.droneHover,
+      depth: 18,
+      scale: 1.8,
+      fxTexture: "pixel-scan-fx-proxy",
+      fxScale: 0.85,
+      fxAlpha: 0.08
+    });
+
+    drone.body = presentation.body;
+    drone.sprite = presentation.sprite.setTint(drone.def.tint);
+    drone.fx = presentation.fx?.setTint(drone.def.tint);
   }
 }
