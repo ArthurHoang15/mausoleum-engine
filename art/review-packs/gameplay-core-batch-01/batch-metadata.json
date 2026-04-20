@@ -1,0 +1,204 @@
+{
+  "batch_id": "gameplay-core-batch-01",
+  "style": "sacred-noir",
+  "output_mode": "review-pack-first",
+  "review_gate": "triad-seed-review",
+  "entities": {
+    "player": [
+      {
+        "source_family_name": "player/idle",
+        "frame_size": [
+          24,
+          32
+        ],
+        "frame_count": 4,
+        "anchor": "bottom-center",
+        "intended_runtime_key": "pixel-player-proxy",
+        "review_status": "pending-review",
+        "strip_path": "player/player-idle-strip.png",
+        "preview_path": "player/player-idle-preview.png"
+      },
+      {
+        "source_family_name": "player/walk",
+        "frame_size": [
+          24,
+          32
+        ],
+        "frame_count": 6,
+        "anchor": "bottom-center",
+        "intended_runtime_key": "pixel-player-proxy",
+        "review_status": "pending-review",
+        "strip_path": "player/player-walk-strip.png",
+        "preview_path": "player/player-walk-preview.png"
+      },
+      {
+        "source_family_name": "player/dash",
+        "frame_size": [
+          24,
+          32
+        ],
+        "frame_count": 4,
+        "anchor": "bottom-center",
+        "intended_runtime_key": "pixel-player-proxy",
+        "review_status": "pending-review",
+        "strip_path": "player/player-dash-strip.png",
+        "preview_path": "player/player-dash-preview.png"
+      },
+      {
+        "source_family_name": "player/scan",
+        "frame_size": [
+          24,
+          32
+        ],
+        "frame_count": 4,
+        "anchor": "bottom-center",
+        "intended_runtime_key": "pixel-player-proxy",
+        "review_status": "pending-review",
+        "strip_path": "player/player-scan-strip.png",
+        "preview_path": "player/player-scan-preview.png"
+      },
+      {
+        "source_family_name": "player/interact",
+        "frame_size": [
+          24,
+          32
+        ],
+        "frame_count": 4,
+        "anchor": "bottom-center",
+        "intended_runtime_key": "pixel-player-proxy",
+        "review_status": "pending-review",
+        "strip_path": "player/player-interact-strip.png",
+        "preview_path": "player/player-interact-preview.png"
+      }
+    ],
+    "drone": [
+      {
+        "source_family_name": "drone/hover",
+        "frame_size": [
+          16,
+          16
+        ],
+        "frame_count": 4,
+        "anchor": "center",
+        "intended_runtime_key": "pixel-drone-proxy",
+        "review_status": "pending-review",
+        "strip_path": "drone/drone-hover-strip.png",
+        "preview_path": "drone/drone-hover-preview.png"
+      },
+      {
+        "source_family_name": "drone/patrol",
+        "frame_size": [
+          16,
+          16
+        ],
+        "frame_count": 4,
+        "anchor": "center",
+        "intended_runtime_key": "pixel-drone-proxy",
+        "review_status": "pending-review",
+        "strip_path": "drone/drone-patrol-strip.png",
+        "preview_path": "drone/drone-patrol-preview.png"
+      },
+      {
+        "source_family_name": "drone/alert",
+        "frame_size": [
+          16,
+          16
+        ],
+        "frame_count": 4,
+        "anchor": "center",
+        "intended_runtime_key": "pixel-drone-proxy",
+        "review_status": "pending-review",
+        "strip_path": "drone/drone-alert-strip.png",
+        "preview_path": "drone/drone-alert-preview.png"
+      }
+    ],
+    "warden": [
+      {
+        "source_family_name": "warden/float",
+        "frame_size": [
+          48,
+          64
+        ],
+        "frame_count": 4,
+        "anchor": "lower-center",
+        "intended_runtime_key": "pixel-warden-proxy",
+        "review_status": "pending-review",
+        "strip_path": "warden/warden-float-strip.png",
+        "preview_path": "warden/warden-float-preview.png"
+      },
+      {
+        "source_family_name": "warden/manifest",
+        "frame_size": [
+          48,
+          64
+        ],
+        "frame_count": 4,
+        "anchor": "lower-center",
+        "intended_runtime_key": "pixel-warden-proxy",
+        "review_status": "pending-review",
+        "strip_path": "warden/warden-manifest-strip.png",
+        "preview_path": "warden/warden-manifest-preview.png"
+      },
+      {
+        "source_family_name": "warden/hunt",
+        "frame_size": [
+          48,
+          64
+        ],
+        "frame_count": 6,
+        "anchor": "lower-center",
+        "intended_runtime_key": "pixel-warden-proxy",
+        "review_status": "pending-review",
+        "strip_path": "warden/warden-hunt-strip.png",
+        "preview_path": "warden/warden-hunt-preview.png"
+      }
+    ],
+    "fx": [
+      {
+        "source_family_name": "fx/scan-pulse",
+        "frame_size": [
+          32,
+          32
+        ],
+        "frame_count": 4,
+        "anchor": "center",
+        "intended_runtime_key": "pixel-scan-fx-proxy",
+        "review_status": "pending-review",
+        "strip_path": "fx/fx-scan-pulse-strip.png",
+        "preview_path": "fx/fx-scan-pulse-preview.png"
+      }
+    ]
+  },
+  "seeds": {
+    "player": {
+      "frame_size": [
+        24,
+        32
+      ],
+      "anchor": "bottom-center",
+      "intended_runtime_key": "pixel-player-proxy",
+      "review_status": "pending-triad-review",
+      "path": "player/player-seed.png"
+    },
+    "drone": {
+      "frame_size": [
+        16,
+        16
+      ],
+      "anchor": "center",
+      "intended_runtime_key": "pixel-drone-proxy",
+      "review_status": "pending-triad-review",
+      "path": "drone/drone-seed.png"
+    },
+    "warden": {
+      "frame_size": [
+        48,
+        64
+      ],
+      "anchor": "lower-center",
+      "intended_runtime_key": "pixel-warden-proxy",
+      "review_status": "pending-triad-review",
+      "path": "warden/warden-seed.png"
+    }
+  }
+}
