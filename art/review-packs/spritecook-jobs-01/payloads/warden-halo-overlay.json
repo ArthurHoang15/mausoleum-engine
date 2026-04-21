@@ -1,0 +1,28 @@
+{
+  "job_id": "warden-halo-overlay",
+  "priority": 14,
+  "tool": "generate_game_art",
+  "arguments": {
+    "prompt": "Create a clean 6-frame-feeling pixel art halo overlay for the Warden Angel: thick gold circular halo ring, sacred blue-white signal shimmer, tiny ivory light ticks, transparent background, no body, no scenery, no text, readable when composited over a 48x64 Warden sprite. The effect should be ceremonial and restrained, not noisy magic.",
+    "width": 192,
+    "height": 192,
+    "variations": 1,
+    "pixel": true,
+    "bg_mode": "transparent",
+    "smart_crop": true,
+    "smart_crop_mode": "tightest",
+    "model": "gemini-3.1-flash-image-preview",
+    "mode": "assets"
+  },
+  "negative_prompt": "photorealistic, 3D render, anime illustration, painterly blur, smooth gradients, noisy dithering, messy antialiasing, chibi exaggeration, generic fantasy goblin, generic king, generic knight, cute toy drone, sci-fi spaceship, cyberpunk neon overload, gore, blood, exposed organs, self-harm, copied sprite, existing game character, logo, text, UI, background scene",
+  "download_folder": "art/review-packs/spritecook-jobs-01/downloads/warden/halo-overlay/",
+  "normalization_target": {
+    "frame_size": [
+      48,
+      64
+    ],
+    "anchor": "center",
+    "runtime_strip": "public/assets/pixel/fx/warden-halo-overlay-strip-v3.png",
+    "runtime_key": "pixel-warden-halo-overlay"
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "pack_id": "player-final-animations-02",
+  "status": "runtime-ready-directional-fallback",
+  "source": "art/review-packs/player-final-lock-01/runtime-frames/idle",
+  "note": "Generated locally from the locked SpriteCook idle. Directional walk families were added for top-down movement while preserving the final player design.",
+  "frame_size": [
+    48,
+    64
+  ],
+  "anchor": "bottom-center",
+  "runtime_key": "pixel-player-proxy",
+  "runtime_strip": "public/assets/pixel/sprites/player/player-runtime-strip-v6.png",
+  "families": {
+    "idle": {
+      "start": 0,
+      "count": 8,
+      "source": "repo-normalized fallback from locked idle"
+    },
+    "walk-down": {
+      "start": 8,
+      "count": 8,
+      "source": "repo-normalized fallback from locked idle"
+    },
+    "walk-up": {
+      "start": 16,
+      "count": 8,
+      "source": "repo-normalized fallback from locked idle"
+    },
+    "walk-left": {
+      "start": 24,
+      "count": 8,
+      "source": "repo-normalized fallback from locked idle"
+    },
+    "walk-right": {
+      "start": 32,
+      "count": 8,
+      "source": "repo-normalized fallback from locked idle"
+    },
+    "dash": {
+      "start": 40,
+      "count": 8,
+      "source": "repo-normalized fallback from locked idle"
+    },
+    "scan": {
+      "start": 48,
+      "count": 8,
+      "source": "repo-normalized fallback from locked idle"
+    },
+    "interact": {
+      "start": 56,
+      "count": 8,
+      "source": "repo-normalized fallback from locked idle"
+    }
+  }
+}

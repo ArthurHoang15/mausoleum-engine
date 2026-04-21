@@ -1,0 +1,27 @@
+{
+  "job_id": "drone-base-runtime",
+  "priority": 5,
+  "tool": "generate_game_art",
+  "arguments": {
+    "prompt": "Create a compact reliquary surveillance drone pixel art game sprite for MAUSOLEUM ENGINE. It should feel like a miniature descendant of the Warden Angel, not a cute robot. Oversized thin halo ring, central cyan lens, compact white ceramic shell, gilded faceplate, small deep-blue lower point, tiny wing-like side plates, elegant cold ceremonial threat, readable after normalization to 16x16. Centered transparent background, animation-ready, no scenery, no text, no UI.",
+    "width": 128,
+    "height": 128,
+    "variations": 1,
+    "pixel": true,
+    "bg_mode": "transparent",
+    "smart_crop": true,
+    "smart_crop_mode": "tightest",
+    "model": "gemini-3.1-flash-image-preview",
+    "mode": "assets"
+  },
+  "negative_prompt": "photorealistic, 3D render, anime illustration, painterly blur, smooth gradients, noisy dithering, messy antialiasing, chibi exaggeration, generic fantasy goblin, generic king, generic knight, cute toy drone, sci-fi spaceship, cyberpunk neon overload, gore, blood, exposed organs, self-harm, copied sprite, existing game character, logo, text, UI, background scene",
+  "download_folder": "art/review-packs/spritecook-jobs-01/downloads/drone/base-runtime/",
+  "normalization_target": {
+    "frame_size": [
+      16,
+      16
+    ],
+    "anchor": "center",
+    "runtime_key": "pixel-drone-proxy"
+  }
+}

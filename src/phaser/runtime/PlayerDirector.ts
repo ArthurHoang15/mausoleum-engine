@@ -10,22 +10,25 @@ export class PlayerDirector {
   private readonly player: Phaser.GameObjects.Container;
   private readonly playerSprite: Phaser.GameObjects.Sprite;
   private readonly halo: Phaser.GameObjects.Arc;
+  private readonly playerScale = 0.95;
   private hidden = false;
   private dashTimer = 0;
   private dashVector = new Phaser.Math.Vector2();
+  private actionAnimationKey: string | null = null;
+  private actionAnimationTimer = 0;
   private concealmentTimer = 0;
   private hideAnchor: VectorLike | null = null;
   private readonly playerSpeed = 140;
 
   constructor(private readonly scene: Phaser.Scene) {
-    this.halo = this.scene.add.circle(0, 0, 24, 0xa9d6ff, 0.18).setDepth(20);
+    this.halo = this.scene.add.circle(0, 0, 28, 0xa9d6ff, 0.18).setDepth(20);
     const presentation = createPixelAnchor(this.scene, {
       x: 0,
       y: 0,
       texture: "pixel-player-proxy",
       animationKey: PIXEL_ANIMATION_KEYS.playerIdle,
       depth: 21,
-      scale: 1.35,
+      scale: this.playerScale,
       spriteOffsetY: -1
     });
     this.player = presentation.body;
@@ -62,6 +65,8 @@ export class PlayerDirector {
     this.resetConcealment();
     this.dashTimer = 0;
     this.dashVector.set(0, 0);
+    this.actionAnimationKey = null;
+    this.actionAnimationTimer = 0;
     this.hideAnchor = null;
     this.updatePresentation(new Phaser.Math.Vector2(), new Phaser.Math.Vector2());
   }
@@ -105,6 +110,16 @@ export class PlayerDirector {
     return true;
   }
 
+  playScanAnimation(): void {
+    this.actionAnimationKey = PIXEL_ANIMATION_KEYS.playerScan;
+    this.actionAnimationTimer = 0.8;
+  }
+
+  playInteractAnimation(): void {
+    this.actionAnimationKey = PIXEL_ANIMATION_KEYS.playerInteract;
+    this.actionAnimationTimer = 1;
+  }
+
   update(
     delta: number,
     inputVector: VectorLike,
@@ -115,6 +130,10 @@ export class PlayerDirector {
     const move = new Phaser.Math.Vector2(inputVector.x, inputVector.y);
 
     this.dashTimer = Math.max(0, this.dashTimer - delta);
+    this.actionAnimationTimer = Math.max(0, this.actionAnimationTimer - delta);
+    if (this.actionAnimationTimer <= 0) {
+      this.actionAnimationKey = null;
+    }
 
     let hiddenSpeedMultiplier = this.hidden ? 0.5 : 1;
     if (this.hidden) {
@@ -163,25 +182,56 @@ export class PlayerDirector {
     move: Phaser.Math.Vector2,
     dash: Phaser.Math.Vector2
   ): void {
+    const dashing = dash.lengthSq() > 1;
+    const moving = move.lengthSq() > 0.01 || dashing;
     const motionX = Math.abs(move.x) > 0.01 ? move.x : dash.x;
-    if (Math.abs(motionX) > 0.01) {
-      this.playerSprite.setFlipX(motionX < 0);
-    }
+    this.playerSprite.setFlipX(dashing && motionX < -0.01);
 
-    const moving = move.lengthSq() > 0.01 || dash.lengthSq() > 1;
-    const animationKey = moving
-      ? PIXEL_ANIMATION_KEYS.playerWalk
-      : PIXEL_ANIMATION_KEYS.playerIdle;
-    if (
+    const animationKey = this.pickAnimationKey(move, dashing, moving);
+    const isOneShotAction =
+      animationKey === PIXEL_ANIMATION_KEYS.playerScan ||
+      animationKey === PIXEL_ANIMATION_KEYS.playerInteract;
+    const shouldSwitchAnimation =
       this.playerSprite.anims.currentAnim?.key !== animationKey ||
-      !this.playerSprite.anims.isPlaying
-    ) {
+      (!isOneShotAction && !this.playerSprite.anims.isPlaying);
+    if (shouldSwitchAnimation) {
       this.playerSprite.play(animationKey, true);
     }
 
     const dashStretch = this.dashTimer > 0 ? 1 + this.dashTimer * 0.9 : 1;
-    this.playerSprite.setScale(1.35 * dashStretch, 1.35 / dashStretch);
+    this.playerSprite.setScale(
+      this.playerScale * dashStretch,
+      this.playerScale / dashStretch
+    );
     this.halo.setScale(0.95 + dashStretch * 0.18);
+  }
+
+  private pickAnimationKey(
+    move: Phaser.Math.Vector2,
+    dashing: boolean,
+    moving: boolean
+  ): string {
+    if (dashing) {
+      return PIXEL_ANIMATION_KEYS.playerDash;
+    }
+
+    if (this.actionAnimationKey) {
+      return this.actionAnimationKey;
+    }
+
+    if (!moving) {
+      return PIXEL_ANIMATION_KEYS.playerIdle;
+    }
+
+    if (Math.abs(move.x) > Math.abs(move.y)) {
+      return move.x < 0
+        ? PIXEL_ANIMATION_KEYS.playerWalkLeft
+        : PIXEL_ANIMATION_KEYS.playerWalkRight;
+    }
+
+    return move.y < 0
+      ? PIXEL_ANIMATION_KEYS.playerWalkUp
+      : PIXEL_ANIMATION_KEYS.playerWalkDown;
   }
 
   private resolveAxis(

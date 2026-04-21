@@ -11,21 +11,34 @@ const imageAsset = (key: string, svg: string) => ({
 
 const spritesheetAsset = (
   key: string,
-  svg: string,
+  source: string,
   frameWidth: number,
   frameHeight: number
 ) => ({
   kind: "spritesheet" as const,
   key,
-  source: svgToDataUri(svg),
+  source,
   frameConfig: { frameWidth, frameHeight }
 });
 
 export const PIXEL_ANIMATION_KEYS = {
   playerIdle: "pixel-player-idle",
   playerWalk: "pixel-player-walk",
+  playerWalkDown: "pixel-player-walk-down",
+  playerWalkUp: "pixel-player-walk-up",
+  playerWalkLeft: "pixel-player-walk-left",
+  playerWalkRight: "pixel-player-walk-right",
+  playerDash: "pixel-player-dash",
+  playerScan: "pixel-player-scan",
+  playerInteract: "pixel-player-interact",
   droneHover: "pixel-drone-hover",
+  dronePatrol: "pixel-drone-patrol",
+  droneAlert: "pixel-drone-alert",
   wardenFloat: "pixel-warden-float",
+  wardenManifest: "pixel-warden-manifest",
+  wardenHunt: "pixel-warden-hunt",
+  wardenContainment: "pixel-warden-containment",
+  wardenHalo: "pixel-warden-halo",
   scanPulse: "pixel-scan-pulse"
 } as const;
 
@@ -62,83 +75,23 @@ const frameSvg = `
   <rect x="4" y="4" width="8" height="8" fill="#7ba3d9"/>
 </svg>`;
 
-const playerStripSvg = `
-<svg xmlns="http://www.w3.org/2000/svg" width="72" height="32" shape-rendering="crispEdges">
-  <rect x="0" y="0" width="24" height="32" fill="#000000" fill-opacity="0"/>
-  <rect x="24" y="0" width="24" height="32" fill="#000000" fill-opacity="0"/>
-  <rect x="48" y="0" width="24" height="32" fill="#000000" fill-opacity="0"/>
-  <rect x="8" y="3" width="8" height="8" fill="#e8edf8"/>
-  <rect x="7" y="10" width="10" height="2" fill="#30394a"/>
-  <rect x="7" y="12" width="10" height="8" fill="#b54a4a"/>
-  <rect x="6" y="14" width="2" height="6" fill="#30394a"/>
-  <rect x="16" y="14" width="2" height="6" fill="#30394a"/>
-  <rect x="8" y="20" width="3" height="8" fill="#30394a"/>
-  <rect x="13" y="20" width="3" height="8" fill="#30394a"/>
-
-  <rect x="32" y="3" width="8" height="8" fill="#e8edf8"/>
-  <rect x="31" y="10" width="10" height="2" fill="#30394a"/>
-  <rect x="31" y="12" width="10" height="8" fill="#b54a4a"/>
-  <rect x="30" y="14" width="2" height="7" fill="#30394a"/>
-  <rect x="40" y="14" width="2" height="5" fill="#30394a"/>
-  <rect x="32" y="20" width="3" height="8" fill="#30394a"/>
-  <rect x="37" y="20" width="3" height="7" fill="#30394a"/>
-
-  <rect x="56" y="3" width="8" height="8" fill="#e8edf8"/>
-  <rect x="55" y="10" width="10" height="2" fill="#30394a"/>
-  <rect x="55" y="12" width="10" height="8" fill="#b54a4a"/>
-  <rect x="54" y="14" width="2" height="5" fill="#30394a"/>
-  <rect x="64" y="14" width="2" height="7" fill="#30394a"/>
-  <rect x="56" y="20" width="3" height="7" fill="#30394a"/>
-  <rect x="61" y="20" width="3" height="8" fill="#30394a"/>
-</svg>`;
-
-const droneStripSvg = `
-<svg xmlns="http://www.w3.org/2000/svg" width="32" height="16" shape-rendering="crispEdges">
-  <rect x="4" y="4" width="8" height="8" fill="#8fd0ff"/>
-  <rect x="2" y="6" width="2" height="4" fill="#dff6ff"/>
-  <rect x="12" y="6" width="2" height="4" fill="#dff6ff"/>
-  <rect x="6" y="2" width="4" height="2" fill="#dff6ff"/>
-
-  <rect x="20" y="5" width="8" height="6" fill="#8fd0ff"/>
-  <rect x="18" y="6" width="2" height="4" fill="#dff6ff"/>
-  <rect x="28" y="6" width="2" height="4" fill="#dff6ff"/>
-  <rect x="22" y="3" width="4" height="2" fill="#dff6ff"/>
-</svg>`;
-
-const wardenStripSvg = `
-<svg xmlns="http://www.w3.org/2000/svg" width="96" height="64" shape-rendering="crispEdges">
-  <rect x="18" y="8" width="12" height="12" fill="#f4f7ff"/>
-  <rect x="15" y="20" width="18" height="18" fill="#d9e3ff"/>
-  <rect x="6" y="22" width="8" height="18" fill="#8ea4ff"/>
-  <rect x="34" y="22" width="8" height="18" fill="#8ea4ff"/>
-  <rect x="18" y="38" width="12" height="18" fill="#7d8ae0"/>
-
-  <rect x="66" y="7" width="12" height="12" fill="#f4f7ff"/>
-  <rect x="63" y="20" width="18" height="18" fill="#d9e3ff"/>
-  <rect x="54" y="20" width="8" height="20" fill="#8ea4ff"/>
-  <rect x="82" y="20" width="8" height="20" fill="#8ea4ff"/>
-  <rect x="66" y="38" width="12" height="18" fill="#7d8ae0"/>
-</svg>`;
-
-const scanFxStripSvg = `
-<svg xmlns="http://www.w3.org/2000/svg" width="128" height="32" shape-rendering="crispEdges">
-  <rect x="14" y="14" width="4" height="4" fill="#a8d1ff"/>
-  <rect x="46" y="12" width="8" height="8" fill="#a8d1ff" fill-opacity="0.7"/>
-  <rect x="42" y="10" width="16" height="12" fill="#dceeff" fill-opacity="0.2"/>
-  <rect x="74" y="8" width="12" height="16" fill="#a8d1ff" fill-opacity="0.45"/>
-  <rect x="70" y="6" width="20" height="20" fill="#dceeff" fill-opacity="0.16"/>
-  <rect x="100" y="4" width="24" height="24" fill="#a8d1ff" fill-opacity="0.35"/>
-  <rect x="96" y="2" width="32" height="28" fill="#dceeff" fill-opacity="0.12"/>
-</svg>`;
+const playerRuntimeStrip = "/assets/pixel/sprites/player/player-runtime-strip-v6.png";
+const droneRuntimeStrip = "/assets/pixel/sprites/drone/drone-runtime-strip-v3.png";
+const wardenRuntimeStrip = "/assets/pixel/sprites/warden/warden-runtime-strip-v2.png";
+const wardenContainmentStrip = "/assets/pixel/sprites/warden/warden-containment-strip-v2.png";
+const wardenHaloOverlayStrip = "/assets/pixel/fx/warden-halo-overlay-strip-v2.png";
+const scanFxRuntimeStrip = "/assets/pixel/fx/scan-fx-runtime-strip.png";
 
 export const pixelAssetManifest = [
   imageAsset("pixel-floor-tile", floorTileSvg),
   imageAsset("pixel-wall-tile", wallTileSvg),
   imageAsset("pixel-ui-frame", frameSvg),
-  spritesheetAsset("pixel-player-proxy", playerStripSvg, 24, 32),
-  spritesheetAsset("pixel-drone-proxy", droneStripSvg, 16, 16),
-  spritesheetAsset("pixel-warden-proxy", wardenStripSvg, 48, 64),
-  spritesheetAsset("pixel-scan-fx-proxy", scanFxStripSvg, 32, 32)
+  spritesheetAsset("pixel-player-proxy", playerRuntimeStrip, 48, 64),
+  spritesheetAsset("pixel-drone-proxy", droneRuntimeStrip, 16, 16),
+  spritesheetAsset("pixel-warden-proxy", wardenRuntimeStrip, 48, 64),
+  spritesheetAsset("pixel-warden-containment", wardenContainmentStrip, 48, 64),
+  spritesheetAsset("pixel-warden-halo-overlay", wardenHaloOverlayStrip, 48, 64),
+  spritesheetAsset("pixel-scan-fx-proxy", scanFxRuntimeStrip, 32, 32)
 ] as const;
 
 export function preloadPixelFoundationAssets(scene: Phaser.Scene): void {
@@ -157,6 +110,9 @@ export function preloadPixelFoundationAssets(scene: Phaser.Scene): void {
 }
 
 export function registerPixelFoundationAnimations(scene: Phaser.Scene): void {
+  const frameRange = (start: number, count: number) =>
+    Array.from({ length: count }, (_, index) => start + index);
+
   const ensureAnimation = (
     key: string,
     texture: string,
@@ -176,9 +132,22 @@ export function registerPixelFoundationAnimations(scene: Phaser.Scene): void {
     });
   };
 
-  ensureAnimation(PIXEL_ANIMATION_KEYS.playerIdle, "pixel-player-proxy", [0, 1], 3);
-  ensureAnimation(PIXEL_ANIMATION_KEYS.playerWalk, "pixel-player-proxy", [0, 1, 2], 8);
-  ensureAnimation(PIXEL_ANIMATION_KEYS.droneHover, "pixel-drone-proxy", [0, 1], 4);
-  ensureAnimation(PIXEL_ANIMATION_KEYS.wardenFloat, "pixel-warden-proxy", [0, 1], 2);
+  ensureAnimation(PIXEL_ANIMATION_KEYS.playerIdle, "pixel-player-proxy", frameRange(0, 8), 6);
+  ensureAnimation(PIXEL_ANIMATION_KEYS.playerWalk, "pixel-player-proxy", frameRange(8, 8), 8);
+  ensureAnimation(PIXEL_ANIMATION_KEYS.playerWalkDown, "pixel-player-proxy", frameRange(8, 8), 8);
+  ensureAnimation(PIXEL_ANIMATION_KEYS.playerWalkUp, "pixel-player-proxy", frameRange(16, 8), 8);
+  ensureAnimation(PIXEL_ANIMATION_KEYS.playerWalkLeft, "pixel-player-proxy", frameRange(24, 8), 8);
+  ensureAnimation(PIXEL_ANIMATION_KEYS.playerWalkRight, "pixel-player-proxy", frameRange(32, 8), 8);
+  ensureAnimation(PIXEL_ANIMATION_KEYS.playerDash, "pixel-player-proxy", frameRange(40, 8), 12, 0);
+  ensureAnimation(PIXEL_ANIMATION_KEYS.playerScan, "pixel-player-proxy", frameRange(48, 8), 10, 0);
+  ensureAnimation(PIXEL_ANIMATION_KEYS.playerInteract, "pixel-player-proxy", frameRange(56, 8), 8, 0);
+  ensureAnimation(PIXEL_ANIMATION_KEYS.droneHover, "pixel-drone-proxy", frameRange(0, 4), 5);
+  ensureAnimation(PIXEL_ANIMATION_KEYS.dronePatrol, "pixel-drone-proxy", frameRange(4, 4), 6);
+  ensureAnimation(PIXEL_ANIMATION_KEYS.droneAlert, "pixel-drone-proxy", frameRange(8, 4), 8);
+  ensureAnimation(PIXEL_ANIMATION_KEYS.wardenFloat, "pixel-warden-proxy", frameRange(0, 4), 4);
+  ensureAnimation(PIXEL_ANIMATION_KEYS.wardenManifest, "pixel-warden-proxy", frameRange(4, 4), 5);
+  ensureAnimation(PIXEL_ANIMATION_KEYS.wardenHunt, "pixel-warden-proxy", frameRange(8, 6), 8);
+  ensureAnimation(PIXEL_ANIMATION_KEYS.wardenContainment, "pixel-warden-containment", frameRange(0, 4), 6, 0);
+  ensureAnimation(PIXEL_ANIMATION_KEYS.wardenHalo, "pixel-warden-halo-overlay", frameRange(0, 6), 8);
   ensureAnimation(PIXEL_ANIMATION_KEYS.scanPulse, "pixel-scan-fx-proxy", [0, 1, 2, 3], 10, 0);
 }

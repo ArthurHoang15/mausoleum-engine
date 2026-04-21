@@ -51,6 +51,7 @@ export class Hud {
   private readonly toast: HTMLElement;
   private readonly debugPanel: HTMLElement;
   private readonly movement = { up: false, down: false, left: false, right: false };
+  private storyTimeout: number | null = null;
   private queuedActions: QueuedActions = {
     scan: false,
     dash: false,
@@ -107,6 +108,7 @@ export class Hud {
             <span>Use: Space or tap Use</span>
             <span>Core: E or tap Core</span>
           </div>
+          <button class="story-dismiss" id="story-dismiss" type="button" aria-label="Dismiss message">Dismiss</button>
         </div>
         <div class="toast" id="toast"></div>
         <pre class="debug-panel" id="debug-panel"></pre>
@@ -149,6 +151,13 @@ export class Hud {
       neural: this.getModuleCard("neural"),
       core: this.getModuleCard("core")
     };
+
+    this.root
+      .querySelector<HTMLButtonElement>("#story-dismiss")
+      ?.addEventListener("pointerdown", (event) => {
+        event.preventDefault();
+        this.hideStory();
+      });
 
     this.bindTouchControls();
   }
@@ -242,6 +251,7 @@ export class Hud {
     const presentation = this.resolveStoryPresentation(title, body);
 
     this.storyPanel.dataset.storyState = presentation.state;
+    this.storyPanel.dataset.visible = "true";
     if (presentation.endingVariant) {
       this.storyPanel.dataset.endingVariant = presentation.endingVariant;
     } else {
@@ -251,6 +261,18 @@ export class Hud {
     this.storyEyebrow.textContent = presentation.eyebrow;
     this.storyTitle.textContent = title;
     this.storyBody.textContent = body;
+
+    if (this.storyTimeout !== null) {
+      window.clearTimeout(this.storyTimeout);
+      this.storyTimeout = null;
+    }
+
+    if (presentation.state !== "ending") {
+      const duration = presentation.state === "onboarding" ? 6200 : 7600;
+      this.storyTimeout = window.setTimeout(() => {
+        this.hideStory();
+      }, duration);
+    }
   }
 
   showToast(message: string): void {
@@ -312,6 +334,14 @@ export class Hud {
     }
 
     return "critical";
+  }
+
+  private hideStory(): void {
+    this.storyPanel.dataset.visible = "false";
+    if (this.storyTimeout !== null) {
+      window.clearTimeout(this.storyTimeout);
+      this.storyTimeout = null;
+    }
   }
 
   private resolveStoryPresentation(title: string, body: string): StoryPresentation {

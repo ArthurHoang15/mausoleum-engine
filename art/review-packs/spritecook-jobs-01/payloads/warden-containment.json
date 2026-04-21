@@ -1,0 +1,33 @@
+{
+  "job_id": "warden-containment",
+  "priority": 13,
+  "tool": "animate_game_art",
+  "arguments": {
+    "asset_id": "<fill asset_id for warden-base-runtime>",
+    "prompt": "Animate the same Warden Angel into a 4-frame containment cast. The staff and halo form a sacred-machine lock field, elegant and non-graphic. Preserve the exact Warden silhouette and materials. No attack impact, no blood, no pain pose, no gore. Transparent background, fixed scale.",
+    "auto_enhance_prompt": false,
+    "edge_margin": 10,
+    "pixel": true,
+    "output_frames": 4,
+    "output_format": "spritesheet",
+    "negative_prompt": "photorealistic, 3D render, anime illustration, painterly blur, smooth gradients, noisy dithering, messy antialiasing, chibi exaggeration, generic fantasy goblin, generic king, generic knight, cute toy drone, sci-fi spaceship, cyberpunk neon overload, gore, blood, exposed organs, self-harm, copied sprite, existing game character, logo, text, UI, background scene",
+    "removebg": "Basic",
+    "colors": 24
+  },
+  "blocked_by": {
+    "asset_label": "warden-base-runtime",
+    "reason": "missing SpriteCook asset_id",
+    "asset_status": "needs-spritecook-generation-or-import",
+    "local_path": null
+  },
+  "download_folder": "art/review-packs/spritecook-jobs-01/downloads/warden/containment/",
+  "normalization_target": {
+    "frame_size": [
+      48,
+      64
+    ],
+    "anchor": "lower-center",
+    "runtime_strip": "public/assets/pixel/sprites/warden/warden-containment-strip-v3.png",
+    "runtime_key": "pixel-warden-containment"
+  }
+}

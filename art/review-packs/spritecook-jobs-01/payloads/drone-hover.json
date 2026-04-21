@@ -1,0 +1,34 @@
+{
+  "job_id": "drone-hover",
+  "priority": 6,
+  "tool": "animate_game_art",
+  "arguments": {
+    "asset_id": "<fill asset_id for drone-base-runtime>",
+    "prompt": "Animate the same reliquary surveillance drone into a 4-frame hover loop. Keep the oversized halo, central cyan lens, white-gold shell, deep-blue lower point, and small side plates stable. Motion should be a tiny sacred float with subtle cyan lens breathing. Transparent background, fixed scale, no shape redesign.",
+    "auto_enhance_prompt": false,
+    "edge_margin": 4,
+    "pixel": true,
+    "output_frames": 4,
+    "output_format": "spritesheet",
+    "negative_prompt": "photorealistic, 3D render, anime illustration, painterly blur, smooth gradients, noisy dithering, messy antialiasing, chibi exaggeration, generic fantasy goblin, generic king, generic knight, cute toy drone, sci-fi spaceship, cyberpunk neon overload, gore, blood, exposed organs, self-harm, copied sprite, existing game character, logo, text, UI, background scene",
+    "removebg": "Basic",
+    "colors": 24
+  },
+  "blocked_by": {
+    "asset_label": "drone-base-runtime",
+    "reason": "missing SpriteCook asset_id",
+    "asset_status": "needs-spritecook-generation",
+    "local_path": null
+  },
+  "download_folder": "art/review-packs/spritecook-jobs-01/downloads/drone/hover/",
+  "normalization_target": {
+    "frame_size": [
+      16,
+      16
+    ],
+    "anchor": "center",
+    "runtime_strip": "public/assets/pixel/sprites/drone/drone-runtime-strip-v4.png",
+    "runtime_key": "pixel-drone-proxy",
+    "animation_range": "hover frames 0-3"
+  }
+}

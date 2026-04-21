@@ -1,0 +1,34 @@
+{
+  "job_id": "player-final-walk",
+  "priority": 1,
+  "tool": "animate_game_art",
+  "arguments": {
+    "asset_id": "<fill asset_id for player-final-idle-source-png>",
+    "prompt": "Create an 8-frame walk animation strip for the exact same MAUSOLEUM ENGINE player character from the approved reference asset. Preserve the hooded ivory reliquary cowl, dark face and underframe, cyan chest gem, burgundy crimson cloak and lower cloth, muted gold trim, compact vulnerable pilgrim silhouette. Keep the same proportions and costume in every frame. One facing direction, transparent background, fixed scale, no text, no UI, no scenery, no redesign. Sacred-noir machine-cathedral pixel art with SpriteCook-like polish, clean readable silhouette, soft but crisp pixel clusters, selective dark outline, restrained animation-ready detail.",
+    "auto_enhance_prompt": false,
+    "edge_margin": 6,
+    "pixel": true,
+    "output_frames": 8,
+    "output_format": "spritesheet",
+    "negative_prompt": "photorealistic, 3D render, anime illustration, painterly blur, smooth gradients, noisy dithering, messy antialiasing, chibi exaggeration, generic fantasy goblin, generic king, generic knight, cute toy drone, sci-fi spaceship, cyberpunk neon overload, gore, blood, exposed organs, self-harm, copied sprite, existing game character, logo, text, UI, background scene",
+    "removebg": "Basic",
+    "colors": 24
+  },
+  "blocked_by": {
+    "asset_label": "player-final-idle-source-png",
+    "reason": "missing SpriteCook asset_id",
+    "asset_status": "needs-spritecook-import",
+    "local_path": "art/review-packs/player/character_idle.png"
+  },
+  "download_folder": "art/review-packs/spritecook-jobs-01/downloads/player/final-walk/",
+  "normalization_target": {
+    "frame_size": [
+      48,
+      64
+    ],
+    "anchor": "bottom-center",
+    "runtime_strip": "public/assets/pixel/sprites/player/player-runtime-strip-v7.png",
+    "runtime_key": "pixel-player-proxy",
+    "animation_range": "walk frames 8-15"
+  }
+}

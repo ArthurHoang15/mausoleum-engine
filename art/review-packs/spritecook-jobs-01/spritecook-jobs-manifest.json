@@ -1,0 +1,306 @@
+{
+  "manifest_version": 1,
+  "pack_id": "spritecook-jobs-01",
+  "style": "SpriteCook-like polished pixel art, sacred-noir machine-cathedral identity",
+  "tooling": {
+    "preferred_connector": "SpriteCook MCP",
+    "expected_tools": [
+      "get_credit_balance",
+      "generate_game_art",
+      "animate_game_art",
+      "check_job_status"
+    ],
+    "current_session_status": "SpriteCook plugin files are installed, but live MCP generation tools are not exposed in this Codex session."
+  },
+  "source_contracts": {
+    "player_final_lock": "art/review-packs/player-final-lock-01/player-final-lock-metadata.json",
+    "player_latest_runtime_pack": "art/review-packs/player-final-animations-02/batch-metadata.json",
+    "character_prompt_bible": "art/manifest/spritecook-character-prompts.md",
+    "runtime_public_assets": "public/assets/pixel/"
+  },
+  "global_negative_prompt": "photorealistic, 3D render, anime illustration, painterly blur, smooth gradients, noisy dithering, messy antialiasing, chibi exaggeration, generic fantasy goblin, generic king, generic knight, cute toy drone, sci-fi spaceship, cyberpunk neon overload, gore, blood, exposed organs, self-harm, copied sprite, existing game character, logo, text, UI, background scene",
+  "jobs": [
+    {
+      "id": "player-final-walk",
+      "priority": 1,
+      "tool": "animate_game_art",
+      "requires_asset_label": "player-final-idle-source-png",
+      "output_frames": 8,
+      "output_format": "spritesheet",
+      "pixel": true,
+      "removebg": "Basic",
+      "edge_margin": 6,
+      "download_folder": "art/review-packs/spritecook-jobs-01/downloads/player/final-walk/",
+      "normalization_target": {
+        "frame_size": [48, 64],
+        "anchor": "bottom-center",
+        "runtime_strip": "public/assets/pixel/sprites/player/player-runtime-strip-v7.png",
+        "runtime_key": "pixel-player-proxy",
+        "animation_range": "walk frames 8-15"
+      },
+      "prompt": "Create an 8-frame walk animation strip for the exact same MAUSOLEUM ENGINE player character from the approved reference asset. Preserve the hooded ivory reliquary cowl, dark face and underframe, cyan chest gem, burgundy crimson cloak and lower cloth, muted gold trim, compact vulnerable pilgrim silhouette. Keep the same proportions and costume in every frame. One facing direction, transparent background, fixed scale, no text, no UI, no scenery, no redesign. Sacred-noir machine-cathedral pixel art with SpriteCook-like polish, clean readable silhouette, soft but crisp pixel clusters, selective dark outline, restrained animation-ready detail."
+    },
+    {
+      "id": "player-final-dash",
+      "priority": 2,
+      "tool": "animate_game_art",
+      "requires_asset_label": "player-final-idle-source-png",
+      "output_frames": 8,
+      "output_format": "spritesheet",
+      "pixel": true,
+      "removebg": "Basic",
+      "edge_margin": 8,
+      "download_folder": "art/review-packs/spritecook-jobs-01/downloads/player/final-dash/",
+      "normalization_target": {
+        "frame_size": [48, 64],
+        "anchor": "bottom-center",
+        "runtime_strip": "review-only until runtime animation wiring",
+        "runtime_key": "pixel-player-proxy"
+      },
+      "prompt": "Create an 8-frame dash animation strip for the exact same locked MAUSOLEUM ENGINE player character. Preserve the ivory hooded cowl, dark face and underframe, cyan chest gem, burgundy crimson cloak, lower cloth, and muted gold trim. Add only a short crimson cloak motion and subtle cyan core streak. One facing direction, transparent background, fixed scale, no new costume details, no scenery, no text, no UI, no redesign."
+    },
+    {
+      "id": "player-final-scan",
+      "priority": 3,
+      "tool": "animate_game_art",
+      "requires_asset_label": "player-final-idle-source-png",
+      "output_frames": 8,
+      "output_format": "spritesheet",
+      "pixel": true,
+      "removebg": "Basic",
+      "edge_margin": 8,
+      "download_folder": "art/review-packs/spritecook-jobs-01/downloads/player/final-scan/",
+      "normalization_target": {
+        "frame_size": [48, 64],
+        "anchor": "bottom-center",
+        "runtime_strip": "review-only until runtime animation wiring",
+        "runtime_key": "pixel-player-proxy"
+      },
+      "prompt": "Create an 8-frame scan animation strip for the exact same locked MAUSOLEUM ENGINE player character. Preserve the ivory hooded cowl, dark underframe, cyan chest gem, burgundy cloak, lower cloth, and muted gold trim. The cyan chest gem and face optics emit a clean sacred-machine scan pulse. One facing direction, transparent background, fixed scale, no new costume details, no scenery, no text, no UI."
+    },
+    {
+      "id": "player-final-interact",
+      "priority": 4,
+      "tool": "animate_game_art",
+      "requires_asset_label": "player-final-idle-source-png",
+      "output_frames": 8,
+      "output_format": "spritesheet",
+      "pixel": true,
+      "removebg": "Basic",
+      "edge_margin": 6,
+      "download_folder": "art/review-packs/spritecook-jobs-01/downloads/player/final-interact/",
+      "normalization_target": {
+        "frame_size": [48, 64],
+        "anchor": "bottom-center",
+        "runtime_strip": "review-only until runtime animation wiring",
+        "runtime_key": "pixel-player-proxy"
+      },
+      "prompt": "Create an 8-frame interact animation strip for the exact same locked MAUSOLEUM ENGINE player character. Preserve the ivory hooded cowl, dark underframe, cyan chest gem, burgundy cloak, lower cloth, and muted gold trim. The character makes a small terminal reach or relic-touch gesture. One facing direction, transparent background, fixed scale, no new costume details, no scenery, no text, no UI."
+    },
+    {
+      "id": "drone-base-runtime",
+      "priority": 5,
+      "tool": "generate_game_art",
+      "width": 128,
+      "height": 128,
+      "variations": 1,
+      "pixel": true,
+      "bg_mode": "transparent",
+      "smart_crop": true,
+      "smart_crop_mode": "tightest",
+      "download_folder": "art/review-packs/spritecook-jobs-01/downloads/drone/base-runtime/",
+      "normalization_target": {
+        "frame_size": [16, 16],
+        "anchor": "center",
+        "runtime_key": "pixel-drone-proxy"
+      },
+      "prompt": "Create a compact reliquary surveillance drone pixel art game sprite for MAUSOLEUM ENGINE. It should feel like a miniature descendant of the Warden Angel, not a cute robot. Oversized thin halo ring, central cyan lens, compact white ceramic shell, gilded faceplate, small deep-blue lower point, tiny wing-like side plates, elegant cold ceremonial threat, readable after normalization to 16x16. Centered transparent background, animation-ready, no scenery, no text, no UI."
+    },
+    {
+      "id": "drone-hover",
+      "priority": 6,
+      "tool": "animate_game_art",
+      "requires_asset_label": "drone-base-runtime",
+      "output_frames": 4,
+      "output_format": "spritesheet",
+      "pixel": true,
+      "removebg": "Basic",
+      "edge_margin": 4,
+      "download_folder": "art/review-packs/spritecook-jobs-01/downloads/drone/hover/",
+      "normalization_target": {
+        "frame_size": [16, 16],
+        "anchor": "center",
+        "runtime_strip": "public/assets/pixel/sprites/drone/drone-runtime-strip-v4.png",
+        "runtime_key": "pixel-drone-proxy",
+        "animation_range": "hover frames 0-3"
+      },
+      "prompt": "Animate the same reliquary surveillance drone into a 4-frame hover loop. Keep the oversized halo, central cyan lens, white-gold shell, deep-blue lower point, and small side plates stable. Motion should be a tiny sacred float with subtle cyan lens breathing. Transparent background, fixed scale, no shape redesign."
+    },
+    {
+      "id": "drone-patrol",
+      "priority": 7,
+      "tool": "animate_game_art",
+      "requires_asset_label": "drone-base-runtime",
+      "output_frames": 4,
+      "output_format": "spritesheet",
+      "pixel": true,
+      "removebg": "Basic",
+      "edge_margin": 4,
+      "download_folder": "art/review-packs/spritecook-jobs-01/downloads/drone/patrol/",
+      "normalization_target": {
+        "frame_size": [16, 16],
+        "anchor": "center",
+        "runtime_strip": "public/assets/pixel/sprites/drone/drone-runtime-strip-v4.png",
+        "runtime_key": "pixel-drone-proxy",
+        "animation_range": "patrol frames 4-7"
+      },
+      "prompt": "Animate the same reliquary surveillance drone into a 4-frame patrol drift. Preserve halo, cyan lens, white-gold shell, deep-blue lower point, and small wing-like plates in every frame. Motion should imply slow scanning movement, not fast flight. Transparent background, fixed scale, no redesign."
+    },
+    {
+      "id": "drone-alert",
+      "priority": 8,
+      "tool": "animate_game_art",
+      "requires_asset_label": "drone-base-runtime",
+      "output_frames": 4,
+      "output_format": "spritesheet",
+      "pixel": true,
+      "removebg": "Basic",
+      "edge_margin": 4,
+      "download_folder": "art/review-packs/spritecook-jobs-01/downloads/drone/alert/",
+      "normalization_target": {
+        "frame_size": [16, 16],
+        "anchor": "center",
+        "runtime_strip": "public/assets/pixel/sprites/drone/drone-runtime-strip-v4.png",
+        "runtime_key": "pixel-drone-proxy",
+        "animation_range": "alert frames 8-11"
+      },
+      "prompt": "Animate the same reliquary surveillance drone into a 4-frame alert flare. The cyan lens and halo brighten sharply, but the base silhouette must not change. Keep the white-gold shell, deep-blue lower point, and side plates. Transparent background, fixed scale, no text, no UI, no scenery."
+    },
+    {
+      "id": "warden-base-runtime",
+      "priority": 9,
+      "tool": "generate_game_art",
+      "width": 256,
+      "height": 320,
+      "variations": 1,
+      "pixel": true,
+      "bg_mode": "transparent",
+      "smart_crop": true,
+      "smart_crop_mode": "tightest",
+      "download_folder": "art/review-packs/spritecook-jobs-01/downloads/warden/base-runtime/",
+      "normalization_target": {
+        "frame_size": [48, 64],
+        "anchor": "lower-center",
+        "runtime_key": "pixel-warden-proxy"
+      },
+      "prompt": "Create a highly polished pixel art game boss sprite: the Warden Angel from MAUSOLEUM ENGINE, a solemn holy-machine guardian. Massive white-gold armor, thick circular halo ring above the head, dark blue helm face, large cyan-blue chest gem, layered white wings with deep blue shadow feathers, ornate staff with blue sanctum crystal, ancient cathedral-machine authority, elegant and oppressive, not demonic, not bloody, not cute. Centered full-body sprite, transparent background, animation-ready silhouette. Preserve the approved Warden benchmark traits exactly: halo, helm-head silhouette, central blue gem, white-gold armor, wing hierarchy, and staff silhouette."
+    },
+    {
+      "id": "warden-float",
+      "priority": 10,
+      "tool": "animate_game_art",
+      "requires_asset_label": "warden-base-runtime",
+      "output_frames": 4,
+      "output_format": "spritesheet",
+      "pixel": true,
+      "removebg": "Basic",
+      "edge_margin": 10,
+      "download_folder": "art/review-packs/spritecook-jobs-01/downloads/warden/float/",
+      "normalization_target": {
+        "frame_size": [48, 64],
+        "anchor": "lower-center",
+        "runtime_strip": "public/assets/pixel/sprites/warden/warden-runtime-strip-v3.png",
+        "runtime_key": "pixel-warden-proxy",
+        "animation_range": "float frames 0-3"
+      },
+      "prompt": "Animate the same Warden Angel into a 4-frame float idle loop. Keep the exact thick halo ring, dark blue helm face, central blue gem, white-gold armor, layered wings, and staff silhouette. Motion is slow, ceremonial, and oppressive. Halo and blue gem pulse subtly. Transparent background, fixed scale, no redesign."
+    },
+    {
+      "id": "warden-manifest",
+      "priority": 11,
+      "tool": "animate_game_art",
+      "requires_asset_label": "warden-base-runtime",
+      "output_frames": 4,
+      "output_format": "spritesheet",
+      "pixel": true,
+      "removebg": "Basic",
+      "edge_margin": 10,
+      "download_folder": "art/review-packs/spritecook-jobs-01/downloads/warden/manifest/",
+      "normalization_target": {
+        "frame_size": [48, 64],
+        "anchor": "lower-center",
+        "runtime_strip": "public/assets/pixel/sprites/warden/warden-runtime-strip-v3.png",
+        "runtime_key": "pixel-warden-proxy",
+        "animation_range": "manifest frames 4-7"
+      },
+      "prompt": "Animate the same Warden Angel into a 4-frame manifestation. Keep the halo, helm, central blue gem, white-gold armor, wings, and staff. The body resolves from sacred blue-white signal fragments into solid armor. No gore, no demonic smoke, no costume change. Transparent background, fixed scale."
+    },
+    {
+      "id": "warden-hunt",
+      "priority": 12,
+      "tool": "animate_game_art",
+      "requires_asset_label": "warden-base-runtime",
+      "output_frames": 6,
+      "output_format": "spritesheet",
+      "pixel": true,
+      "removebg": "Basic",
+      "edge_margin": 10,
+      "download_folder": "art/review-packs/spritecook-jobs-01/downloads/warden/hunt/",
+      "normalization_target": {
+        "frame_size": [48, 64],
+        "anchor": "lower-center",
+        "runtime_strip": "public/assets/pixel/sprites/warden/warden-runtime-strip-v3.png",
+        "runtime_key": "pixel-warden-proxy",
+        "animation_range": "hunt frames 8-13"
+      },
+      "prompt": "Animate the same Warden Angel into a 6-frame hunt advance. The movement should be calm, inevitable, and predatory without becoming violent. Keep the exact halo, helm, central blue gem, white-gold armor, layered wings, and staff. Wings and robes shift slightly; halo and gem intensify. Transparent background, fixed scale, no redesign."
+    },
+    {
+      "id": "warden-containment",
+      "priority": 13,
+      "tool": "animate_game_art",
+      "requires_asset_label": "warden-base-runtime",
+      "output_frames": 4,
+      "output_format": "spritesheet",
+      "pixel": true,
+      "removebg": "Basic",
+      "edge_margin": 10,
+      "download_folder": "art/review-packs/spritecook-jobs-01/downloads/warden/containment/",
+      "normalization_target": {
+        "frame_size": [48, 64],
+        "anchor": "lower-center",
+        "runtime_strip": "public/assets/pixel/sprites/warden/warden-containment-strip-v3.png",
+        "runtime_key": "pixel-warden-containment"
+      },
+      "prompt": "Animate the same Warden Angel into a 4-frame containment cast. The staff and halo form a sacred-machine lock field, elegant and non-graphic. Preserve the exact Warden silhouette and materials. No attack impact, no blood, no pain pose, no gore. Transparent background, fixed scale."
+    },
+    {
+      "id": "warden-halo-overlay",
+      "priority": 14,
+      "tool": "generate_game_art",
+      "width": 192,
+      "height": 192,
+      "variations": 1,
+      "pixel": true,
+      "bg_mode": "transparent",
+      "smart_crop": true,
+      "smart_crop_mode": "tightest",
+      "download_folder": "art/review-packs/spritecook-jobs-01/downloads/warden/halo-overlay/",
+      "normalization_target": {
+        "frame_size": [48, 64],
+        "anchor": "center",
+        "runtime_strip": "public/assets/pixel/fx/warden-halo-overlay-strip-v3.png",
+        "runtime_key": "pixel-warden-halo-overlay"
+      },
+      "prompt": "Create a clean 6-frame-feeling pixel art halo overlay for the Warden Angel: thick gold circular halo ring, sacred blue-white signal shimmer, tiny ivory light ticks, transparent background, no body, no scenery, no text, readable when composited over a 48x64 Warden sprite. The effect should be ceremonial and restrained, not noisy magic."
+    }
+  ],
+  "post_generation_review": [
+    "Inspect downloaded output at native size and 2x scale.",
+    "Reject any output with a new player costume, crown motif, generic goblin or king drift.",
+    "Reject any drone that reads as cute toy, spaceship, or generic orb.",
+    "Reject any Warden that loses halo, helm, blue gem, white-gold armor, wings, or staff.",
+    "Normalize only after visual approval.",
+    "Run bun run test and bun run build after any runtime manifest update."
+  ]
+}

@@ -155,6 +155,7 @@ export class GameScene extends Phaser.Scene {
       const result = this.services.controller.useScan();
       if (result.ok) {
         this.scanRevealTimer = 4;
+        this.playerDirector.playScanAnimation();
         this.services.audio.onScan();
       }
       if (result.toast) {
@@ -188,6 +189,7 @@ export class GameScene extends Phaser.Scene {
 
     if (wantsInteract) {
       this.services.audio.unlock();
+      this.playerDirector.playInteractAnimation();
       this.interactionDirector.tryInteract({
         interactions: this.worldRenderer.interactions,
         doors: this.worldRenderer.doors,

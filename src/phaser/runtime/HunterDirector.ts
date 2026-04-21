@@ -306,6 +306,19 @@ export class HunterDirector {
     const pulseFrame = getPresentationPulseFrame(elapsedMs, 4, 120);
     const hoverOffset = getPresentationFloatOffset(elapsedMs, 3, 1800, Math.PI / 6);
     const facingX = behavior.target.x - this.warden.body.x;
+    const animationKey =
+      phase === "pulse-hunt"
+        ? PIXEL_ANIMATION_KEYS.wardenHunt
+        : this.phaseElapsed < 0.9
+          ? PIXEL_ANIMATION_KEYS.wardenManifest
+          : PIXEL_ANIMATION_KEYS.wardenFloat;
+    if (
+      this.warden.sprite &&
+      (this.warden.sprite.anims.currentAnim?.key !== animationKey ||
+        !this.warden.sprite.anims.isPlaying)
+    ) {
+      this.warden.sprite.play(animationKey, true);
+    }
     this.warden.halo.setScale(1 + pulseFrame * 0.08);
     this.warden.sprite?.setFlipX(facingX < 0).setY(-4 + hoverOffset);
     this.warden.fx

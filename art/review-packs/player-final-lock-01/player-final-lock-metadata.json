@@ -1,0 +1,58 @@
+{
+  "pack_id": "player-final-lock-01",
+  "source": {
+    "png": "source/character_idle.png",
+    "webp": "source/character_idle.webp",
+    "source_frame_size": [
+      94,
+      94
+    ],
+    "source_frame_count": 8
+  },
+  "final_design_lock": {
+    "status": "locked",
+    "source_of_truth": "SpriteCook character_idle asset",
+    "must_keep_traits": [
+      "hooded ivory reliquary cowl",
+      "dark face and underframe",
+      "cyan chest gem",
+      "burgundy/crimson cloak and lower cloth",
+      "muted gold trim",
+      "compact vulnerable pilgrim silhouette"
+    ],
+    "must_avoid": [
+      "generic fantasy king or goblin drift",
+      "new crown motif",
+      "gore or body-horror detail",
+      "costume redesign between animations"
+    ]
+  },
+  "runtime": {
+    "frame_size": [
+      48,
+      64
+    ],
+    "anchor": "bottom-center",
+    "runtime_key": "pixel-player-proxy",
+    "strip_path": "art/review-packs/player-final-lock-01/player-runtime-strip-v4.png",
+    "superseded_runtime_strip": "public/assets/pixel/sprites/player/player-runtime-strip-v6.png",
+    "animation_ranges": {
+      "idle": {
+        "start": 0,
+        "count": 8,
+        "source": "SpriteCook idle"
+      },
+      "walk": {
+        "start": 8,
+        "count": 8,
+        "source": "temporary idle reuse",
+        "review_status": "needs-spritecook-walk"
+      }
+    }
+  },
+  "asset_checks": {
+    "png_width_divisible_by_8": true,
+    "webp_has_8_frames": true,
+    "normalized_frames_are_48x64": true
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "manifest_version": 1,
+  "pack_id": "spritecook-jobs-01",
+  "notes": "SpriteCook asset_id values should be filled after authenticated import or generation. sha12 values identify local source files before import.",
+  "assets": [
+    {
+      "label": "player-final-idle-source-png",
+      "local_path": "art/review-packs/player/character_idle.png",
+      "sha12": "BEC911F84486",
+      "asset_id": null,
+      "status": "needs-spritecook-import",
+      "note": "The matching SpriteCook asset found in recent assets is an animation and cannot be used as an animation source."
+    },
+    {
+      "label": "player-final-idle-source-webp",
+      "local_path": "art/review-packs/player/character_idle.webp",
+      "sha12": "B37CFA5F56A1",
+      "asset_id": null,
+      "status": "reference-only"
+    },
+    {
+      "label": "player-final-idle-animation-spritecook",
+      "local_path": "art/review-packs/player/character_idle.png",
+      "sha12": "BEC911F84486",
+      "asset_id": "894dd425-2aa0-4364-82b5-3ed8e3558c9a",
+      "status": "animation-asset-not-valid-as-animation-source"
+    },
+    {
+      "label": "player-legacy-reliquary-exile-image",
+      "local_path": null,
+      "sha12": null,
+      "asset_id": "5e28e3cc-ae17-4c15-9bb9-ff4c0f5c7642",
+      "status": "valid-image-source-but-not-final-player-lock"
+    },
+    {
+      "label": "drone-base-runtime",
+      "local_path": null,
+      "sha12": null,
+      "asset_id": null,
+      "status": "needs-spritecook-generation"
+    },
+    {
+      "label": "warden-base-runtime",
+      "local_path": null,
+      "sha12": null,
+      "asset_id": null,
+      "status": "needs-spritecook-generation-or-import"
+    }
+  ]
+}

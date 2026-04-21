@@ -1,0 +1,27 @@
+{
+  "job_id": "warden-base-runtime",
+  "priority": 9,
+  "tool": "generate_game_art",
+  "arguments": {
+    "prompt": "Create a highly polished pixel art game boss sprite: the Warden Angel from MAUSOLEUM ENGINE, a solemn holy-machine guardian. Massive white-gold armor, thick circular halo ring above the head, dark blue helm face, large cyan-blue chest gem, layered white wings with deep blue shadow feathers, ornate staff with blue sanctum crystal, ancient cathedral-machine authority, elegant and oppressive, not demonic, not bloody, not cute. Centered full-body sprite, transparent background, animation-ready silhouette. Preserve the approved Warden benchmark traits exactly: halo, helm-head silhouette, central blue gem, white-gold armor, wing hierarchy, and staff silhouette.",
+    "width": 256,
+    "height": 320,
+    "variations": 1,
+    "pixel": true,
+    "bg_mode": "transparent",
+    "smart_crop": true,
+    "smart_crop_mode": "tightest",
+    "model": "gemini-3.1-flash-image-preview",
+    "mode": "assets"
+  },
+  "negative_prompt": "photorealistic, 3D render, anime illustration, painterly blur, smooth gradients, noisy dithering, messy antialiasing, chibi exaggeration, generic fantasy goblin, generic king, generic knight, cute toy drone, sci-fi spaceship, cyberpunk neon overload, gore, blood, exposed organs, self-harm, copied sprite, existing game character, logo, text, UI, background scene",
+  "download_folder": "art/review-packs/spritecook-jobs-01/downloads/warden/base-runtime/",
+  "normalization_target": {
+    "frame_size": [
+      48,
+      64
+    ],
+    "anchor": "lower-center",
+    "runtime_key": "pixel-warden-proxy"
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "job_id": "warden-hunt",
+  "priority": 12,
+  "tool": "animate_game_art",
+  "arguments": {
+    "asset_id": "<fill asset_id for warden-base-runtime>",
+    "prompt": "Animate the same Warden Angel into a 6-frame hunt advance. The movement should be calm, inevitable, and predatory without becoming violent. Keep the exact halo, helm, central blue gem, white-gold armor, layered wings, and staff. Wings and robes shift slightly; halo and gem intensify. Transparent background, fixed scale, no redesign.",
+    "auto_enhance_prompt": false,
+    "edge_margin": 10,
+    "pixel": true,
+    "output_frames": 6,
+    "output_format": "spritesheet",
+    "negative_prompt": "photorealistic, 3D render, anime illustration, painterly blur, smooth gradients, noisy dithering, messy antialiasing, chibi exaggeration, generic fantasy goblin, generic king, generic knight, cute toy drone, sci-fi spaceship, cyberpunk neon overload, gore, blood, exposed organs, self-harm, copied sprite, existing game character, logo, text, UI, background scene",
+    "removebg": "Basic",
+    "colors": 24
+  },
+  "blocked_by": {
+    "asset_label": "warden-base-runtime",
+    "reason": "missing SpriteCook asset_id",
+    "asset_status": "needs-spritecook-generation-or-import",
+    "local_path": null
+  },
+  "download_folder": "art/review-packs/spritecook-jobs-01/downloads/warden/hunt/",
+  "normalization_target": {
+    "frame_size": [
+      48,
+      64
+    ],
+    "anchor": "lower-center",
+    "runtime_strip": "public/assets/pixel/sprites/warden/warden-runtime-strip-v3.png",
+    "runtime_key": "pixel-warden-proxy",
+    "animation_range": "hunt frames 8-13"
+  }
+}

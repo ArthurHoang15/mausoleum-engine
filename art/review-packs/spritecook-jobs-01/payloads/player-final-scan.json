@@ -1,0 +1,33 @@
+{
+  "job_id": "player-final-scan",
+  "priority": 3,
+  "tool": "animate_game_art",
+  "arguments": {
+    "asset_id": "<fill asset_id for player-final-idle-source-png>",
+    "prompt": "Create an 8-frame scan animation strip for the exact same locked MAUSOLEUM ENGINE player character. Preserve the ivory hooded cowl, dark underframe, cyan chest gem, burgundy cloak, lower cloth, and muted gold trim. The cyan chest gem and face optics emit a clean sacred-machine scan pulse. One facing direction, transparent background, fixed scale, no new costume details, no scenery, no text, no UI.",
+    "auto_enhance_prompt": false,
+    "edge_margin": 8,
+    "pixel": true,
+    "output_frames": 8,
+    "output_format": "spritesheet",
+    "negative_prompt": "photorealistic, 3D render, anime illustration, painterly blur, smooth gradients, noisy dithering, messy antialiasing, chibi exaggeration, generic fantasy goblin, generic king, generic knight, cute toy drone, sci-fi spaceship, cyberpunk neon overload, gore, blood, exposed organs, self-harm, copied sprite, existing game character, logo, text, UI, background scene",
+    "removebg": "Basic",
+    "colors": 24
+  },
+  "blocked_by": {
+    "asset_label": "player-final-idle-source-png",
+    "reason": "missing SpriteCook asset_id",
+    "asset_status": "needs-spritecook-import",
+    "local_path": "art/review-packs/player/character_idle.png"
+  },
+  "download_folder": "art/review-packs/spritecook-jobs-01/downloads/player/final-scan/",
+  "normalization_target": {
+    "frame_size": [
+      48,
+      64
+    ],
+    "anchor": "bottom-center",
+    "runtime_strip": "review-only until runtime animation wiring",
+    "runtime_key": "pixel-player-proxy"
+  }
+}
